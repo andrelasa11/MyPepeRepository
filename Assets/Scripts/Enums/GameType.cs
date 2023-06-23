@@ -1,6 +1,7 @@
 public enum GameType
 {
-    InfinityJump,
+    HealthGame,
     FoodDrop,
-    HillDrive
+    HillDrive,
+    Runner
 }

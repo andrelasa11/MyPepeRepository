@@ -11,10 +11,6 @@ public class Mover : MonoBehaviour
     {
         switch(gameType)
         {
-            case GameType.InfinityJump:
-                rigidBody.velocity = (Vector2.down * GCInfinityJump.Instance.platformSpeed);
-                break;
-
             case GameType.FoodDrop:
                 rigidBody.velocity = (Vector2.down * GCFoodDrop.Instance.foodSpeed);
                 break;

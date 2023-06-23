@@ -5,6 +5,7 @@ public class OnTriggerEnterDo : MonoBehaviour
 {
     [SerializeField] private UnityEvent playerActions;
     [SerializeField] private UnityEvent playerHeadActions;
+    [SerializeField] private UnityEvent playerBulletActions;
     [SerializeField] private UnityEvent dangerActions;
     [SerializeField] private UnityEvent platformActions;
     [SerializeField] private UnityEvent petFoodActions;
@@ -22,6 +23,10 @@ public class OnTriggerEnterDo : MonoBehaviour
         {
             playerHeadActions.Invoke();
         }*/
+        else if (collision.CompareTag("PlayerBullet"))
+        {
+            playerBulletActions.Invoke();
+        }
         else if (collision.CompareTag("Danger"))
         {
             dangerActions.Invoke();

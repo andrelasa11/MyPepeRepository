@@ -42,10 +42,6 @@ public abstract class GameController : MonoBehaviour
     {   
         Time.timeScale = 0;
 
-        DateTime now = DateTime.Now;
-
-        GameManager.Instance.AddHappinessValue(15, now);            
-
         scoreUI.SetTotalValueText(score, totalScore);
 
         mainCanvas.SetActive(false);

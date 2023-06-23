@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -16,24 +15,36 @@ public class GameManager : MonoBehaviour
     public float money;
 
     [Header("PetStatus")]
-    public int dirt;
-    public int happiness;
-    public int energy;
-    public int food;
+    [SerializeField] private float health;
+    [SerializeField] private float happiness;
+    [SerializeField] private float energy;
+    [SerializeField] private float hunger;
 
-    [Header("DateTime")]
-    public DateTime lastTimeDirt;
-    public DateTime lastTimeHappiness;
-    public DateTime lastTimeEnergy;
-    public DateTime lastTimeFood;
 
     [Header("Records")]
-    public float infinityJumpRecord;
-    public float foodDropRecord;
-    public float hillDriveRecord;
+    [SerializeField] private float healthGameRecord;
+    [SerializeField] private float foodDropRecord;
+    [SerializeField] private float hillDriveRecord;
+    [SerializeField] private float runnerRecord;
 
-    [Header("Dependencies")]
-    public SOGameManager managerConfig;
+    //private
+    private DateTime lastPlayTime;
+    private const float statusDecreaseRate = 5f; // Status decrease rate per hour
+
+    #region "Properties"
+
+    public float Hunger { get { return hunger; } }
+    public float Energy { get { return energy; } }
+    public float Health { get { return health; } }
+    public float Happiness { get { return happiness; } }
+    public float FoodDropRecord { get { return foodDropRecord; } }
+    public float HealthGameRecord { get { return healthGameRecord; } }
+    public float HillDriveRecord { get { return hillDriveRecord; } }
+    public float RunnerRecord { get { return runnerRecord; } }
+
+    #endregion
+
+    #region "Awake/Start/Update"
 
     private void Awake()
     {
@@ -46,145 +57,128 @@ public class GameManager : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(gameObject);
         }
-
-        //LoadPlayer();
-
-        //RecordAllStatus();
-
-        Debug.Log(lastTimeDirt.ToString());
-        Debug.Log(lastTimeHappiness.ToString());
-
     }
+
+    private void Start()
+    {
+        lastPlayTime = DateTime.Now;
+        LoadStatus();
+    }
+    private void Update()
+    {
+        TimeSpan timeSinceLastPlay = DateTime.Now - lastPlayTime;
+        float decreaseAmount = (float)timeSinceLastPlay.TotalHours * statusDecreaseRate;
+
+        // Reduzir os status do pet com base no tempo de inatividade
+        hunger -= decreaseAmount;
+        energy -= decreaseAmount;
+        health -= decreaseAmount;
+        happiness -= decreaseAmount;
+
+        // Garantir que os status permaneçam entre 0 e 100
+        hunger = Mathf.Clamp(hunger, 0f, 100f);
+        energy = Mathf.Clamp(energy, 0f, 100f);
+        health = Mathf.Clamp(health, 0f, 100f);
+        happiness = Mathf.Clamp(happiness, 0f, 100f);
+
+        lastPlayTime = DateTime.Now;
+    }
+
+    #endregion
 
     #region "Save & Load Methods"
 
-    public void SavePlayer()
+    public void SetStatus(float newHunger, float newEnergy, float newHealth, float newHappiness)
     {
-        SaveSystem.SavePlayer(this);
+        hunger = newHunger;
+        energy = newEnergy;
+        health = newHealth;
+        happiness = newHappiness;
     }
 
-    public void LoadPlayer()
+    private void LoadStatus()
     {
-        PlayerData data = SaveSystem.LoadPlayer();
+        SaveLoadManager saveLoadManager = FindObjectOfType<SaveLoadManager>();
 
-        money = data.money;
+        if (saveLoadManager != null)
+        {
+            saveLoadManager.LoadGame();
+        }
+    }
 
-        dirt = data.dirt;
-        happiness = data.happiness;
-        energy = data.energy;
-        food = data.food;
+    private void SaveStatus()
+    {
+        SaveLoadManager saveLoadManager = FindObjectOfType<SaveLoadManager>();
 
-        lastTimeDirt = DateTime.Parse(data.lastTimeDirt);
-        lastTimeHappiness = data.lastTimeHappiness;
-        lastTimeEnergy = data.lastTimeEnergy;
-        lastTimeFood = data.lastTimeFood;
+        if (saveLoadManager != null)
+        {
+            saveLoadManager.SaveGame();
+        }
+    }
 
-        infinityJumpRecord = data.infinityJumpRecord;
-        foodDropRecord = data.foodDropRecord;
-        hillDriveRecord = data.hillDriveRecord;
+    private void OnApplicationQuit()
+    {
+        SaveStatus();
     }
 
     #endregion
 
     #region "Record Methods"
 
-    public void SetInfinityJumpRecord(float value)
+    public void SetHealthGameRecord(float value)
     {
-        infinityJumpRecord = value;
-        SavePlayer();
+        healthGameRecord = value;
+        SaveStatus();
     }
 
     public void SetFoodDropRecord(float value)
     {
         foodDropRecord = value;
-        SavePlayer();
+        SaveStatus();
     }
 
     public void SetHillDriveRecord(float value)
     {
         hillDriveRecord = value;
-        SavePlayer();
+        SaveStatus();
+    }
+
+    public void SetRunnerRecord(float value)
+    {
+        runnerRecord = value;
+        SaveStatus();
     }
 
     #endregion
 
     #region "Status Methods"
 
-    public void SetDirtValue(int value, DateTime lastTime)
+    public void FeedPet(float value)
     {
-        dirt = value;
-        lastTimeDirt = lastTime;
-
-        if (dirt < 0) dirt = 0;
-                
-        SavePlayer();
-        RecordAllStatus();
+        // Aumente o status de Fome quando o pet for alimentado
+        hunger += value;
+        hunger = Mathf.Clamp(hunger, 0f, 100f);
     }
 
-    public void SetHappinessValue(int value, DateTime lastTime)
+    public void PutToBed(float value)
     {
-        happiness = value;
-        lastTimeHappiness = lastTime;
-
-        if (happiness < 0) happiness = 0;
-
-        SavePlayer();
-        RecordAllStatus();
+        // Aumente o status de Sono quando o pet for colocado para dormir
+        energy += value;
+        energy = Mathf.Clamp(value, 0f, 100f);
     }
 
-    public void AddHappinessValue(int value, DateTime lastTime)
+    public void HealPet(float value)
     {
+        // Aumente o status de Saúde quando o pet for curado
+        health += value;
+        health = Mathf.Clamp(health, 0f, 100f);
+    }
+
+    public void PlayWithPet(float value)
+    {
+        // Aumente o status de Diversão quando o pet brincar
         happiness += value;
-        lastTimeHappiness = lastTime;
-
-        if (happiness > 100) happiness = 100;
-        else if (happiness < 0) happiness = 0;
-
-        SavePlayer();
-        RecordAllStatus();
-    }
-
-    public void SetEnergyValue(int value, DateTime lastTime)
-    {
-        energy = value;
-        lastTimeEnergy = lastTime;
-
-        if (energy < 0) energy = 0;
-
-        SavePlayer();
-        RecordAllStatus();
-    }
-
-    public void SetFoodValue(int value, DateTime lastTime)
-    {
-        food = value;
-        lastTimeFood = lastTime;
-
-        if (food < 0) food = 0;
-
-        SavePlayer();
-        RecordAllStatus();
-    }
-
-    public void RecordAllStatus()
-    {
-
-        managerConfig.money = money;
-
-        managerConfig.dirt = dirt;
-        managerConfig.happiness = happiness;
-        managerConfig.energy = energy;
-        managerConfig.food = food;
-        
-        managerConfig.lastTimeDirt = lastTimeDirt;
-        managerConfig.lastTimeHappiness = lastTimeHappiness;
-        managerConfig.lastTimeEnergy = lastTimeEnergy;
-        managerConfig.lastTimeFood = lastTimeFood;
-
-        managerConfig.infinityJumpRecord = infinityJumpRecord;
-        managerConfig.foodDropRecord = foodDropRecord;
-        managerConfig.hillDriveRecord = hillDriveRecord;
-
+        happiness = Mathf.Clamp(value, 0f, 100f);
     }
 
     #endregion

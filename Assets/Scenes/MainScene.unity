@@ -792,14 +792,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   money: 0
-  dirt: 100
+  health: 50
   happiness: 100
   energy: 100
-  food: 100
-  infinityJumpRecord: 0
+  hunger: 50
+  healthGameRecord: 0
   foodDropRecord: 0
   hillDriveRecord: 0
-  managerConfig: {fileID: 11400000, guid: 8072b63764745024cb62aa94b4a8b532, type: 2}
+  runnerRecord: 0
 --- !u!4 &2013527876
 Transform:
   m_ObjectHideFlags: 0

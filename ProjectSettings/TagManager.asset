@@ -8,6 +8,8 @@ TagManager:
   - PetFood
   - Danger
   - Ground
+  - Coin
+  - PlayerBullet
   layers:
   - Default
   - TransparentFX
@@ -16,7 +18,7 @@ TagManager:
   - Water
   - UI
   - Ground
-  - 
+  - PlayerBullet
   - 
   - 
   - 

@@ -72,7 +72,7 @@ public class GCHillDrive : GameController
         audioSource.Stop();
         totalScore = score + distance;
 
-        if (totalScore > GameManager.Instance.hillDriveRecord)
+        if (totalScore > GameManager.Instance.HillDriveRecord)
         {
             GameManager.Instance.SetHillDriveRecord(totalScore);
         }

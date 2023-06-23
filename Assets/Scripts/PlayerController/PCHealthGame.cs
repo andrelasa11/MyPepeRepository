@@ -8,6 +8,12 @@ public class PCHealthGame : PlayerController
     [SerializeField] private float jumpBufferTime = 0.2f;
     [SerializeField] private LayerMask groundLayer;
 
+    public GameObject bulletPrefab;    // Prefab do tiro
+    public Transform firePoint;        // Posição de onde o tiro é lançado
+    public float fireRate = 0.5f;      // Taxa de disparo em segundos
+
+    private float nextFireTime = 0f;   // Tempo para o próximo disparo
+
     //private Rigidbody2D rb;
     private bool isJumping = false;
     private bool isJumpBuffered = false;
@@ -30,27 +36,27 @@ public class PCHealthGame : PlayerController
         {
             coyoteTimeRemaining -= Time.deltaTime;
         }
+
+        // Verifica se é hora de disparar novamente
+        if (Time.time >= nextFireTime)
+        {
+            // Dispara o tiro
+            Shoot();
+
+            // Atualiza o tempo para o próximo disparo
+            nextFireTime = Time.time + 1f / fireRate;
+        }
     }
 
     private void FixedUpdate()
     {
         rigidBody.velocity = new Vector2(horizontalMove * speed, rigidBody.velocity.y);
 
-        if (horizontalMove != 0)
+        /*if (horizontalMove != 0)
         {
             animator.SetBool("Run", true);
         }
-        else animator.SetBool("Run", false);
-
-        if (horizontalMove < 0 && !isFacingRight)
-        {
-            Flip();
-        }
-
-        if (horizontalMove > 0 && isFacingRight)
-        {
-            Flip();
-        }
+        else animator.SetBool("Run", false);*/
     }
 
     public void OnJump(InputAction.CallbackContext context)
@@ -98,5 +104,16 @@ public class PCHealthGame : PlayerController
 
         return false;
     }
+
+    private void Shoot()
+    {
+        // Instancia o tiro na posição do firePoint
+        GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+
+        // Adiciona força ao tiro para fazê-lo se mover horizontalmente para a direita
+        bullet.GetComponent<Rigidbody2D>().velocity = transform.right * 10f; // Ajuste a velocidade conforme necessário
+    }
+
+
 }
 

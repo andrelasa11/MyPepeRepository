@@ -35,8 +35,8 @@ public class CoinController : MonoBehaviour
     {
         switch(gameType)
         {
-            case GameType.InfinityJump:
-                GCInfinityJump.Instance.SetScore(scorePoints);
+            case GameType.HealthGame:
+                GCHealthGame.Instance.SetScore(scorePoints);
                 break;
 
             case GameType.HillDrive:

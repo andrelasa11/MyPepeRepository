@@ -19,16 +19,16 @@ public class ScoreUI : MonoBehaviour
 
         switch(gameType)
         {
-            case GameType.InfinityJump:
-                recordValueText.text = GameManager.Instance.infinityJumpRecord.ToString("N2");
+            case GameType.HealthGame:
+                recordValueText.text = GameManager.Instance.HealthGameRecord.ToString("N2");
                 break;
 
             case GameType.FoodDrop:
-                recordValueText.text = GameManager.Instance.foodDropRecord.ToString("N2");
+                recordValueText.text = GameManager.Instance.FoodDropRecord.ToString("N2");
                 break;
 
             case GameType.HillDrive:
-                recordValueText.text = GameManager.Instance.hillDriveRecord.ToString("N2");
+                recordValueText.text = GameManager.Instance.HillDriveRecord.ToString("N2");
                 break;
         }
     }

@@ -85,7 +85,7 @@ public class GCFoodDrop : GameController
         //AudioManager.Instance.PlayDeath();
         totalScore = score;
 
-        if (totalScore > GameManager.Instance.foodDropRecord)
+        if (totalScore > GameManager.Instance.FoodDropRecord)
         {
             GameManager.Instance.SetFoodDropRecord(totalScore);
         }
