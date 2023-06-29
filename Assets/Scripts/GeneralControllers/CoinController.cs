@@ -42,6 +42,10 @@ public class CoinController : MonoBehaviour
             case GameType.HillDrive:
                 GCHillDrive.Instance.SetScore(scorePoints);
                 break;
+
+            case GameType.Runner:
+                GCRunner.Instance.SetScore(scorePoints);
+                break;
         }
     }
 

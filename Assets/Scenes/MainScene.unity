@@ -329,7 +329,7 @@ MonoBehaviour:
   bgLobby: {fileID: 8300000, guid: ed31d2020e8eb574f9f664f02649b56c, type: 3}
   dancingSong: {fileID: 8300000, guid: 2c97c7ed4bf1c52419199e2e27dde048, type: 3}
   jumping: {fileID: 8300000, guid: 5a04120d3b9c37940a66627d961d5529, type: 3}
-  bgInfinityJump: {fileID: 8300000, guid: 37f4e5a133182534b9dbc10e0a33b1bf, type: 3}
+  bgRunner: {fileID: 8300000, guid: 1ce4a0f1c5f5e2845a4ebff0940790da, type: 3}
   eating: {fileID: 8300000, guid: f3b28921685ed3b4a81c2b8d00b08aee, type: 3}
   failure: {fileID: 8300000, guid: b651e3892988c104c8e726a6fc030aa6, type: 3}
   bgFoodDropSound: {fileID: 8300000, guid: 7a5a00ab4fb435c4e9af4552e78433b4, type: 3}

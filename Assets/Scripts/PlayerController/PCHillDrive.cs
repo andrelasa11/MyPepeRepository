@@ -18,8 +18,6 @@ public class PCHillDrive : PlayerController
     [Header("UI")]
     [SerializeField] private Image fuelUI;
 
-    private void Start() => AudioManager.Instance.PlayBgHillDrive();
-
     void FixedUpdate()
     {
         if (GCHillDrive.Instance.fuel > 0)

@@ -16,9 +16,9 @@ public class AudioManager : MonoBehaviour
     public AudioClip bgLobby;
     public AudioClip dancingSong;
 
-    [Header("InfinityJump")]
+    [Header("Runner")]
     public AudioClip jumping;
-    public AudioClip bgInfinityJump;
+    public AudioClip bgRunner;
 
     [Header("FoodDrop")]
     public AudioClip eating;
@@ -86,9 +86,11 @@ public class AudioManager : MonoBehaviour
 
     #endregion
 
-    #region "Infinity Jump Methods"
+    #region "Runner Methods"
 
     public void PlayJump() => PlaySound(jumping);
+
+    public void PlayBgRunner() => SetBGSound(bgRunner);
 
     #endregion
 
@@ -98,7 +100,7 @@ public class AudioManager : MonoBehaviour
 
     public void PlayFailure() => PlaySound(failure);
 
-    public void PlayBgInfinityJump() => SetBGSound(bgInfinityJump);
+    public void PlayBgInfinityJump() => SetBGSound(bgRunner);
 
     #endregion
 

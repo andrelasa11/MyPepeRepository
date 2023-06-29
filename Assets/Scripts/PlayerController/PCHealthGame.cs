@@ -1,119 +1,149 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PCHealthGame : PlayerController
 {
-    [SerializeField] private float jumpForce = 5f;
-    [SerializeField] private float coyoteTime = 0.2f;
-    [SerializeField] private float jumpBufferTime = 0.2f;
-    [SerializeField] private LayerMask groundLayer;
+    #region Jump Variables
+    [Header("Jump Settings")]
+    [SerializeField] private AnimationCurve jumpCurve;
+    [SerializeField] private float jumpDuration = 0.8f;
+    [SerializeField] private float jumpForce = 10f;
+    [SerializeField] private int maxJumps = 2;
+    [SerializeField] private float landingDelay = 0.5f;
 
-    public GameObject bulletPrefab;    // Prefab do tiro
-    public Transform firePoint;        // Posição de onde o tiro é lançado
-    public float fireRate = 0.5f;      // Taxa de disparo em segundos
-
-    private float nextFireTime = 0f;   // Tempo para o próximo disparo
-
-    //private Rigidbody2D rb;
     private bool isJumping = false;
-    private bool isJumpBuffered = false;
-    private float coyoteTimeRemaining = 0f;
-    private float jumpBufferTimeRemaining = 0f;
+    private int jumpsRemaining;
+    //private bool canJump = false;
+    #endregion
+
+    #region Shooting Variables
+    [Header("Shooting Settings")]
+    public GameObject bulletPrefab;
+    public Transform firePoint;
+    public float fireRate = 0.5f;
+
+    private float nextFireTime;
+    #endregion
+
+
+    #region Unity Callbacks
+
+    private void Start()
+    {
+        InitializeJumpSettings();
+        InitializeShootingSettings();
+    }
 
     private void Update()
     {
-        // Jump buffering
-        if (isJumpBuffered && jumpBufferTimeRemaining > 0f)
-        {
-            Jump();
-            jumpBufferTimeRemaining = 0f;
-            isJumpBuffered = false;
-        }
-        jumpBufferTimeRemaining -= Time.deltaTime;
-
-        // Coyote time
-        if (coyoteTimeRemaining > 0f)
-        {
-            coyoteTimeRemaining -= Time.deltaTime;
-        }
-
-        // Verifica se é hora de disparar novamente
-        if (Time.time >= nextFireTime)
-        {
-            // Dispara o tiro
-            Shoot();
-
-            // Atualiza o tempo para o próximo disparo
-            nextFireTime = Time.time + 1f / fireRate;
-        }
+        HandleShooting();
     }
 
     private void FixedUpdate()
     {
-        rigidBody.velocity = new Vector2(horizontalMove * speed, rigidBody.velocity.y);
-
-        /*if (horizontalMove != 0)
-        {
-            animator.SetBool("Run", true);
-        }
-        else animator.SetBool("Run", false);*/
+        MovePlayer();
     }
 
-    public void OnJump(InputAction.CallbackContext context)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (context.started)
+        if (collision.gameObject.CompareTag("Ground"))
         {
-            // Check if the player is grounded or within the coyote time window
-            if (IsGrounded() || coyoteTimeRemaining > 0f)
-            {
-                Jump();
-            }
-            else
-            {
-                // Buffer the jump input for later use
-                isJumpBuffered = true;
-                jumpBufferTimeRemaining = jumpBufferTime;
-            }
+            //canJump = true;
+            jumpsRemaining = maxJumps;
         }
     }
 
-    private void Jump()
+    private void OnCollisionExit2D(Collision2D collision)
     {
-        rigidBody.velocity = new Vector2(rigidBody.velocity.x, jumpForce);
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            //canJump = false;
+        }
+    }
+    #endregion
+
+    #region Jumping
+    private void InitializeJumpSettings()
+    {
+        jumpsRemaining = maxJumps;
+
+        // Configuração da curva de animação
+        jumpCurve = new AnimationCurve(
+            new Keyframe(0f, 0f),      // Tempo inicial, força inicial (0)
+            new Keyframe(0.2f, 0.5f),    // Tempo intermediário, força máxima (1)
+            new Keyframe(0.5f, 1f),    // Tempo intermediário, força máxima (1)
+            new Keyframe(1f, 0f)       // Tempo final, força final (0)
+        );
+    }
+
+    public void OnJump()
+    {
+        if (CanJump())
+        {
+            StartCoroutine(JumpRoutine());
+            jumpsRemaining--;
+        }
+    }
+
+    private IEnumerator JumpRoutine()
+    {
         isJumping = true;
-        coyoteTimeRemaining = coyoteTime;
-    }
+        float elapsedTime = 0f;
+        float initialVelocity = rigidBody.velocity.y;
 
-    private bool IsGrounded()
-    {
-        // Define o ponto de origem do raycast logo abaixo do jogador
-        Vector2 origin = new Vector2(transform.position.x, transform.position.y - 0.1f);
-
-        // Define o tamanho e direção do raycast
-        Vector2 direction = Vector2.down;
-        float distance = 0.2f;
-
-        // Executa o raycast para verificar colisões com layers específicas (defina suas layers apropriadas)
-        RaycastHit2D hit = Physics2D.Raycast(origin, direction, distance, groundLayer);
-
-        // Verifica se o raycast atingiu algum objeto e retorna true se estiver no chão
-        if (hit.collider != null)
+        while (elapsedTime < jumpDuration)
         {
-            return true;
+            float normalizedTime = elapsedTime / jumpDuration;
+            float jumpForceMultiplier = jumpCurve.Evaluate(normalizedTime);
+
+            float targetVelocity = jumpForce * jumpForceMultiplier;
+            float velocityDiff = targetVelocity - initialVelocity;
+
+            rigidBody.velocity = new Vector2(rigidBody.velocity.x, initialVelocity + velocityDiff);
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
         }
 
-        return false;
+        rigidBody.velocity = new Vector2(rigidBody.velocity.x, 0f); // Stop vertical velocity at the peak of the jump
+        isJumping = false;
+
+        yield return new WaitForSeconds(landingDelay);
+    }
+
+    private bool CanJump()
+    {
+        return jumpsRemaining > 0 && !isJumping;
+    }
+    #endregion
+
+    #region Shooting
+    private void InitializeShootingSettings()
+    {
+        nextFireTime = 0f;
+    }
+
+    private void HandleShooting()
+    {
+        if (Time.time >= nextFireTime)
+        {
+            Shoot();
+            nextFireTime = Time.time + 1f / fireRate;
+        }
     }
 
     private void Shoot()
     {
-        // Instancia o tiro na posição do firePoint
         GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
-
-        // Adiciona força ao tiro para fazê-lo se mover horizontalmente para a direita
-        bullet.GetComponent<Rigidbody2D>().velocity = transform.right * 10f; // Ajuste a velocidade conforme necessário
+        bullet.GetComponent<Rigidbody2D>().velocity = transform.right * 10f;
     }
+    #endregion
 
-
+    #region Movement
+    private void MovePlayer()
+    {
+        rigidBody.velocity = new Vector2(horizontalMove * speed, rigidBody.velocity.y);
+    }
+    #endregion
 }
-

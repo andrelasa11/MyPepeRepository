@@ -7,7 +7,8 @@ public class PCRunner : PlayerController
 
     [Header("Jump")]
     [SerializeField] private float jumpForce;
-    [SerializeField] private int maxJumpCount = 2;
+    [SerializeField] private float jumpDescentForce = 200f;
+    [SerializeField] private int extraJumps = 1;
     private int jumpCount = 0;
     private bool isGrounded;
     private bool isJumping;
@@ -27,35 +28,19 @@ public class PCRunner : PlayerController
 
     #region MonoBehaviour Methods
 
-    private void Awake()
-    {
-        animator = GetComponent<Animator>(); // Obter referência ao componente Animator
-    }
-
     private void Update()
     {
-        if (jumpCount >= maxJumpCount)
-        {
-            isJumping = false;
-        }
-        else if (isJumping && rigidBody.velocity.y <= 0)
-        {
-            isJumping = false;
-            jumpCount++;
-        }
+        CheckJumpState();
 
-        // Atualizar o parâmetro "IsJumping" da animação
-        if (jumpTriggered && (isGrounded || jumpCount < maxJumpCount))
+        if (jumpTriggered && (isGrounded || jumpCount < extraJumps))
         {
             Jump();
             animator.SetTrigger("IsJumping");
             jumpTriggered = false;
         }
 
-        // Atualizar o parâmetro "NoChao" da animação
         animator.SetBool("NoChao", isGrounded);
 
-        // Verificar se tocou no chão para retornar para a animação de idle
         if (isGrounded && !isJumping)
         {
             animator.SetTrigger("TocouNoChao");
@@ -64,28 +49,46 @@ public class PCRunner : PlayerController
 
     private void FixedUpdate()
     {
-        if (!isJumping)
-            ApplyGravity();
+        if (isJumping && rigidBody.velocity.y < 0)
+        {
+            ApplyJumpDescent();
+        }
     }
 
     #endregion
 
     #region Player Actions
 
-    private void Jump()
+    private void CheckJumpState()
     {
-        if (isGrounded || jumpCount < maxJumpCount)
+        if (isGrounded)
         {
-            rigidBody.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
-            isJumping = true;
-            jumpCount++;
+            isJumping = false;
+            jumpCount = 0;
         }
     }
 
-    private void ApplyGravity()
+    private void Jump()
+    {
+        if (isGrounded)
+        {
+            jumpCount = 0;
+        }
+
+        if (jumpCount < extraJumps)
+        {
+            rigidBody.velocity = new Vector2(rigidBody.velocity.x, 0f);
+            rigidBody.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
+            isJumping = true;
+            jumpCount++;
+            AudioManager.Instance.PlayJump();
+        }
+    }
+
+    private void ApplyJumpDescent()
     {
         Vector2 velocity = rigidBody.velocity;
-        velocity.y += Physics2D.gravity.y * Time.fixedDeltaTime;
+        velocity.y -= jumpDescentForce * Time.fixedDeltaTime;
         rigidBody.velocity = velocity;
     }
 
@@ -98,7 +101,6 @@ public class PCRunner : PlayerController
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = true;
-            jumpCount = 0;
         }
     }
 

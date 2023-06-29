@@ -21,6 +21,17 @@ public class PlatformController : MonoBehaviour
 
     #endregion
 
+    [Header("Reposition Settings")]
+    [SerializeField] private float repositionX = 20f;
+    [SerializeField] private float repositionThreshold = -20f;
+
+    [SerializeField] private float currentSpeed; // Armazena a velocidade atual
+
+    private void Start()
+    {
+        currentSpeed = GCRunner.Instance.Speed; // Inicializa a velocidade com a velocidade inicial do GCRunner
+    }
+
     private void FixedUpdate()
     {
         Move();
@@ -28,8 +39,6 @@ public class PlatformController : MonoBehaviour
 
     private void Move()
     {
-        float currentSpeed = GCRunner.Instance.Speed;
-
         currentSpeed += GCRunner.Instance.AccelerationRate * Time.fixedDeltaTime;
         currentSpeed = Mathf.Clamp(currentSpeed, 0f, GCRunner.Instance.MaxSpeed);
 
@@ -38,11 +47,13 @@ public class PlatformController : MonoBehaviour
 
         pos.x -= realVelocity * Time.fixedDeltaTime;
 
-        if (pos.x <= -20)
+        if (pos.x <= repositionThreshold)
         {
-            pos.x = 20;
+            pos.x = repositionX;
             pos.y = Random.Range(minY, maxY);
             SpawnObstacles();
+            currentSpeed += GCRunner.Instance.AccelerationRate * Time.fixedDeltaTime; // Mantém a velocidade atualizada após o reposicionamento
+            currentSpeed = Mathf.Clamp(currentSpeed, 0f, GCRunner.Instance.MaxSpeed);
         }
 
         transform.position = pos;

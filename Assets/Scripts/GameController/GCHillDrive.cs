@@ -38,6 +38,7 @@ public class GCHillDrive : GameController
 
     private void Start()
     {
+        AudioManager.Instance.PlayBgHillDrive();
         mainCanvas.SetActive(true);
         gameOverCanvas.SetActive(false);
         distanceReferencePoint = new Vector3(player.transform.position.x, player.transform.position.y, player.transform.position.z);

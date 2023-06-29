@@ -10,6 +10,7 @@ TagManager:
   - Ground
   - Coin
   - PlayerBullet
+  - Fence
   layers:
   - Default
   - TransparentFX

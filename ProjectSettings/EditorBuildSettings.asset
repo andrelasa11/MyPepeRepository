@@ -17,4 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/HealthGame.unity
     guid: 00773453c27b3e149839143af6825852
+  - enabled: 1
+    path: Assets/Scenes/Runner.unity
+    guid: 80379a66de3804541841dca59152e68f
   m_configObjects: {}

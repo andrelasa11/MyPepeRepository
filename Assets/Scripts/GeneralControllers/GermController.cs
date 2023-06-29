@@ -10,14 +10,18 @@ public class GermController : MonoBehaviour
     private float speed;
     private int scorePoints;
     private float healthPoints;
+    private Animator animator;
+    private string animatorController;
 
     private void Start() => InitializeGermController();
 
     private void InitializeGermController()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        animator = GetComponent<Animator>();
         SelectRandomGermControllerSO();
         SetVariablesFromGermControllerSO();
+        animator.SetBool(animatorController, true);
     }
 
     private void SelectRandomGermControllerSO()
@@ -29,6 +33,7 @@ public class GermController : MonoBehaviour
     private void SetVariablesFromGermControllerSO()
     {
         spriteRenderer.sprite = currentGermControllerSO.sprite;
+        animatorController = currentGermControllerSO.animatorController;
         speed = currentGermControllerSO.speed;
         scorePoints = currentGermControllerSO.score;
         healthPoints = currentGermControllerSO.healthPoints;

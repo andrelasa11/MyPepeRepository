@@ -21,9 +21,18 @@ public abstract class GameController : MonoBehaviour
 
     public virtual void SetScore(int scorePoints)
     {
-        score += scorePoints;
-        AudioManager.Instance.PlayCoin();
-        scoreUI.SetScoreValueText(score);
+        if(scorePoints > 0)
+        {
+            score += scorePoints;
+            AudioManager.Instance.PlayCoin();
+            scoreUI.SetScoreValueText(score);
+        }
+        else
+        {
+            score += scorePoints;
+            scoreUI.SetScoreValueText(score);
+        }
+        
     }
 
     public virtual void SetPlayerLives(int value)

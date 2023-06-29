@@ -10,11 +10,11 @@ public class ScoreUI : MonoBehaviour
     [SerializeField] private Text recordValueText;
     [SerializeField] private GameType gameType;
 
-    public void SetScoreValueText(int scoreValue) => scoreValueText.text = scoreValue.ToString("N0");
+    public void SetScoreValueText(int scoreValue) => scoreValueText.text = scoreValue.ToString("N2");
 
     public void SetTotalValueText(int scoreValue, float totalScoreValue)
     {
-        finalScoreValueText.text = scoreValue.ToString("N0");
+        finalScoreValueText.text = scoreValue.ToString("N2");
         totalValueText.text = totalScoreValue.ToString("N2");
 
         switch(gameType)
@@ -29,6 +29,10 @@ public class ScoreUI : MonoBehaviour
 
             case GameType.HillDrive:
                 recordValueText.text = GameManager.Instance.HillDriveRecord.ToString("N2");
+                break;
+
+            case GameType.Runner:
+                recordValueText.text = GameManager.Instance.RunnerRecord.ToString("N2");
                 break;
         }
     }

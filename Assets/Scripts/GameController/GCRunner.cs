@@ -26,4 +26,15 @@ public class GCRunner : GameController
         totalScore = 0;
         Time.timeScale = 1f;
     }
+
+    private void Start()
+    {
+        AudioManager.Instance.PlayBgRunner();
+        mainCanvas.SetActive(true);
+        gameOverCanvas.SetActive(false);
+        scoreUI.SetScoreValueText(score);
+        lifeUI.SetValueText(playerLife);
+        distanceUI.SetValueText(distance);
+        Screen.orientation = ScreenOrientation.LandscapeLeft;
+    }
 }

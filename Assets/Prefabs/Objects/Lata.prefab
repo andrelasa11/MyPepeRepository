@@ -98,8 +98,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scoreToDecrease: 3
-  spriteRenderer: {fileID: 0}
-  inedibleConfigs: []
 --- !u!114 &8067267119214385257
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -152,6 +150,9 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   playerHeadActions:
+    m_PersistentCalls:
+      m_Calls: []
+  playerBulletActions:
     m_PersistentCalls:
       m_Calls: []
   dangerActions:
