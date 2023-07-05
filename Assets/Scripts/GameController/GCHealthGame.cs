@@ -35,7 +35,7 @@ public class GCHealthGame : GameController
 
         healthBar.value = GameManager.Instance.Health;
 
-        AudioManager.Instance.PlayBgFoodDrop();
+        AudioManager.Instance.SetBackgroundSound("BgHealthGame");
 
         Screen.orientation = ScreenOrientation.LandscapeLeft;
     }

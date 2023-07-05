@@ -52,7 +52,7 @@ public class GCFoodDrop : GameController
 
         lifeUI.SetValueText(playerLife);
 
-        AudioManager.Instance.PlayBgFoodDrop();
+        AudioManager.Instance.SetBackgroundSound("BgFoodDrop");
 
         onFireCountdown = onFireWaitTime;
 
@@ -76,7 +76,7 @@ public class GCFoodDrop : GameController
 
         if(scorePoints > 0)
         {
-            AudioManager.Instance.PlayEating();
+            AudioManager.Instance.PlaySound("Eating");
         }
     }
 

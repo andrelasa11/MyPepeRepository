@@ -14,7 +14,6 @@ public class PCHealthGame : PlayerController
 
     private bool isJumping = false;
     private int jumpsRemaining;
-    //private bool canJump = false;
     #endregion
 
     #region Shooting Variables
@@ -35,21 +34,22 @@ public class PCHealthGame : PlayerController
         InitializeShootingSettings();
     }
 
-    private void Update()
-    {
-        HandleShooting();
-    }
-
     private void FixedUpdate()
     {
-        MovePlayer();
+        rigidBody.velocity = new Vector2(horizontalMove * speed, rigidBody.velocity.y);
+
+        if (horizontalMove != 0)
+        {
+            animator.SetBool("Run", true);
+        }
+        else animator.SetBool("Run", false);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Ground"))
         {
-            //canJump = true;
+            animator.SetBool("IsGround", true);
             jumpsRemaining = maxJumps;
         }
     }
@@ -58,7 +58,7 @@ public class PCHealthGame : PlayerController
     {
         if (collision.gameObject.CompareTag("Ground"))
         {
-            //canJump = false;
+            animator.SetBool("IsGround", false);
         }
     }
     #endregion
@@ -77,17 +77,20 @@ public class PCHealthGame : PlayerController
         );
     }
 
-    public void OnJump()
+    public void OnJump(InputAction.CallbackContext context)
     {
-        if (CanJump())
+        if (context.started && (CanJump()))
         {
             StartCoroutine(JumpRoutine());
             jumpsRemaining--;
+            AudioManager.Instance.PlaySound("Frog");
+            AudioManager.Instance.PlaySound("Jump");
         }
     }
 
     private IEnumerator JumpRoutine()
     {
+        animator.SetFloat("Height", rigidBody.velocity.y);
         isJumping = true;
         float elapsedTime = 0f;
         float initialVelocity = rigidBody.velocity.y;
@@ -124,10 +127,12 @@ public class PCHealthGame : PlayerController
         nextFireTime = 0f;
     }
 
-    private void HandleShooting()
+    public void OnShooting(InputAction.CallbackContext context)
     {
-        if (Time.time >= nextFireTime)
+        if (context.started && (Time.time >= nextFireTime))
         {
+            animator.SetTrigger("Shoot");
+            AudioManager.Instance.PlaySound("LaserShoot");
             Shoot();
             nextFireTime = Time.time + 1f / fireRate;
         }
@@ -137,13 +142,6 @@ public class PCHealthGame : PlayerController
     {
         GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
         bullet.GetComponent<Rigidbody2D>().velocity = transform.right * 10f;
-    }
-    #endregion
-
-    #region Movement
-    private void MovePlayer()
-    {
-        rigidBody.velocity = new Vector2(horizontalMove * speed, rigidBody.velocity.y);
     }
     #endregion
 }

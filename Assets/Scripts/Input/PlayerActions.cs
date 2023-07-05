@@ -44,6 +44,15 @@ public partial class @PlayerActions : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Shooting"",
+                    ""type"": ""Button"",
+                    ""id"": ""6c49dae0-7186-469e-9893-4ad8c6e6a339"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -189,6 +198,17 @@ public partial class @PlayerActions : IInputActionCollection2, IDisposable
                     ""action"": ""Interacting"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f297ff95-9c4f-43c3-8959-dc15a45ac270"",
+                    ""path"": ""<Keyboard>/numpad0"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Shooting"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -222,6 +242,7 @@ public partial class @PlayerActions : IInputActionCollection2, IDisposable
         m_PlayerControls = asset.FindActionMap("PlayerControls", throwIfNotFound: true);
         m_PlayerControls_Movement = m_PlayerControls.FindAction("Movement", throwIfNotFound: true);
         m_PlayerControls_Interacting = m_PlayerControls.FindAction("Interacting", throwIfNotFound: true);
+        m_PlayerControls_Shooting = m_PlayerControls.FindAction("Shooting", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -283,12 +304,14 @@ public partial class @PlayerActions : IInputActionCollection2, IDisposable
     private IPlayerControlsActions m_PlayerControlsActionsCallbackInterface;
     private readonly InputAction m_PlayerControls_Movement;
     private readonly InputAction m_PlayerControls_Interacting;
+    private readonly InputAction m_PlayerControls_Shooting;
     public struct PlayerControlsActions
     {
         private @PlayerActions m_Wrapper;
         public PlayerControlsActions(@PlayerActions wrapper) { m_Wrapper = wrapper; }
         public InputAction @Movement => m_Wrapper.m_PlayerControls_Movement;
         public InputAction @Interacting => m_Wrapper.m_PlayerControls_Interacting;
+        public InputAction @Shooting => m_Wrapper.m_PlayerControls_Shooting;
         public InputActionMap Get() { return m_Wrapper.m_PlayerControls; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -304,6 +327,9 @@ public partial class @PlayerActions : IInputActionCollection2, IDisposable
                 @Interacting.started -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnInteracting;
                 @Interacting.performed -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnInteracting;
                 @Interacting.canceled -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnInteracting;
+                @Shooting.started -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnShooting;
+                @Shooting.performed -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnShooting;
+                @Shooting.canceled -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnShooting;
             }
             m_Wrapper.m_PlayerControlsActionsCallbackInterface = instance;
             if (instance != null)
@@ -314,6 +340,9 @@ public partial class @PlayerActions : IInputActionCollection2, IDisposable
                 @Interacting.started += instance.OnInteracting;
                 @Interacting.performed += instance.OnInteracting;
                 @Interacting.canceled += instance.OnInteracting;
+                @Shooting.started += instance.OnShooting;
+                @Shooting.performed += instance.OnShooting;
+                @Shooting.canceled += instance.OnShooting;
             }
         }
     }
@@ -340,5 +369,6 @@ public partial class @PlayerActions : IInputActionCollection2, IDisposable
     {
         void OnMovement(InputAction.CallbackContext context);
         void OnInteracting(InputAction.CallbackContext context);
+        void OnShooting(InputAction.CallbackContext context);
     }
 }

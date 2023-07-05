@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class GCRunner : GameController
@@ -29,12 +30,49 @@ public class GCRunner : GameController
 
     private void Start()
     {
-        AudioManager.Instance.PlayBgRunner();
+        AudioManager.Instance.SetBackgroundSound("BgRunner");
         mainCanvas.SetActive(true);
         gameOverCanvas.SetActive(false);
         scoreUI.SetScoreValueText(score);
         lifeUI.SetValueText(playerLife);
         distanceUI.SetValueText(distance);
         Screen.orientation = ScreenOrientation.LandscapeLeft;
+        StartCoroutine(nameof(DistanceRoutine));
+    }
+
+    private void FixedUpdate()
+    {
+        SetSpeed();
+
+        distanceUI.SetValueText(distance);
+    }
+
+    private IEnumerator DistanceRoutine()
+    {
+        while (true)
+        {
+            distance += speed / 6;
+
+            yield return new WaitForSeconds(0.5f);
+        }
+
+    }
+
+    private void SetSpeed()
+    {
+        speed += accelerationRate * Time.fixedDeltaTime;
+        speed = Mathf.Clamp(speed, 0f, maxSpeed);
+    }
+
+    public override void OnGameOver()
+    {
+        totalScore = score + distance;
+
+        if (totalScore > GameManager.Instance.RunnerRecord)
+        {
+            GameManager.Instance.SetRunnerRecord(totalScore);
+        }
+
+        base.OnGameOver();
     }
 }

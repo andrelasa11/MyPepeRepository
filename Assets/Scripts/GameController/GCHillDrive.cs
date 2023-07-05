@@ -38,7 +38,7 @@ public class GCHillDrive : GameController
 
     private void Start()
     {
-        AudioManager.Instance.PlayBgHillDrive();
+        AudioManager.Instance.SetBackgroundSound("BgHillDrive");
         mainCanvas.SetActive(true);
         gameOverCanvas.SetActive(false);
         distanceReferencePoint = new Vector3(player.transform.position.x, player.transform.position.y, player.transform.position.z);
@@ -60,7 +60,7 @@ public class GCHillDrive : GameController
     public void SetFuel(float value)
     {
         fuel += value;
-        AudioManager.Instance.PlayFuel();
+        AudioManager.Instance.PlaySound("Fuel");
 
         if (fuel > 1)
         {

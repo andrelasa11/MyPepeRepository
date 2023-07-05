@@ -536,6 +536,9 @@ MonoBehaviour:
   playerHeadActions:
     m_PersistentCalls:
       m_Calls: []
+  playerBulletActions:
+    m_PersistentCalls:
+      m_Calls: []
   dangerActions:
     m_PersistentCalls:
       m_Calls:
@@ -755,8 +758,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19cea2771eab04e4b9fd3a5dd495debc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initialWaitTime: 2
-  cadence: 1.5
+  initialWaitTime: 3
+  cadence: 2.5
   yPosition: 6.1
   xMinPosition: -2.4
   xMaxPosition: 2.4

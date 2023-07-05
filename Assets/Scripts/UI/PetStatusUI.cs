@@ -25,7 +25,7 @@ public class PetStatusUI : MonoBehaviour
     private void Update()
     {
         UpdateSliders();
-        UpdateRecordTexts();
+        //UpdateRecordTexts();
     }
 
     private void UpdateSliders()
@@ -36,11 +36,11 @@ public class PetStatusUI : MonoBehaviour
         happinessSlider.value = gameManager.Happiness;
     }
 
-    private void UpdateRecordTexts()
+    /*private void UpdateRecordTexts()
     {
         foodDropRecordText.text = "Food Drop Record: " + gameManager.FoodDropRecord;
         healthGameRecordText.text = "Health Game Record: " + gameManager.HealthGameRecord;
         hillDriveRecordText.text = "Hill Drive Record: " + gameManager.HillDriveRecord;
         runnerRecordText.text = "Runner Record: " + gameManager.RunnerRecord;
-    }
+    }*/
 }

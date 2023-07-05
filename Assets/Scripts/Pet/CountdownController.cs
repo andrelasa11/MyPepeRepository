@@ -27,7 +27,7 @@ public class CountdownController : MonoBehaviour
         lobby1.SetActive(true);
     }
 
-    public void PlayClickSound() => AudioManager.Instance.PlaySelect();
+    public void PlayClickSound() => AudioManager.Instance.PlaySound("Select");
 
     public IEnumerator CountdownCoroutine()
     {

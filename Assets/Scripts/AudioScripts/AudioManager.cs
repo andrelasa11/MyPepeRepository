@@ -1,124 +1,61 @@
 using UnityEngine;
+using System;
 
 public class AudioManager : MonoBehaviour
 {
-    #region "Singleton"
+    public static AudioManager Instance { get; private set; }
 
-    private static AudioManager instance;
+    [Header("Audio Clips")]
+    public Sound[] sounds;
 
-    public static AudioManager Instance { get { return instance; } }
-
-    #endregion
-
-    [Header("Lobby")]
-    public AudioClip select;
-    public AudioClip showering;
-    public AudioClip bgLobby;
-    public AudioClip dancingSong;
-
-    [Header("Runner")]
-    public AudioClip jumping;
-    public AudioClip bgRunner;
-
-    [Header("FoodDrop")]
-    public AudioClip eating;
-    public AudioClip failure;
-    public AudioClip bgFoodDropSound;
-
-    [Header("HillDrive")]
-    public AudioClip fuel;
-    public AudioClip bgHillDrive;
-
-    [Header("Generals")]
-    public AudioClip coin;
-    public AudioClip death;
-
-    [Header("Dependencies")]
-    [SerializeField] private AudioSource audioSource;
-
-    //private
-    private bool isDancing = false;
+    public AudioSource AudioSource { get; private set; }
 
     private void Awake()
     {
-        if(instance != null) Destroy(gameObject);
-
+        if (Instance != null)
+        {
+            Destroy(gameObject);
+        }
         else
         {
-            instance = this;
+            Instance = this;
             DontDestroyOnLoad(gameObject);
         }
 
+        AudioSource = GetComponent<AudioSource>();
     }
 
-    //main method
-    private void PlaySound(AudioClip clip) => audioSource.PlayOneShot(clip);
-
-    //main method for background sound
-    private void SetBGSound(AudioClip clip)
+    public void PlaySound(string soundName, AudioClip clip = null)
     {
-        audioSource.clip = clip;
-        audioSource.Play();
-    }
-
-    #region "Lobby Methods"
-
-    public void PlaySelect() => PlaySound(select);
-
-    public void PlayShowering() => PlaySound(showering);
-
-    public void PlayBgLobby() => SetBGSound(bgLobby);
-
-    public void PlayDacingSong()
-    {
-        if (isDancing == false)
+        Sound sound = Array.Find(sounds, s => s.name == soundName);
+        if (sound != null)
         {
-            SetBGSound(dancingSong);
-            isDancing = true;
+            AudioSource.PlayOneShot(clip != null ? clip : sound.clip);
         }
         else
         {
-            SetBGSound(bgLobby);
-            isDancing = false;
+            Debug.LogWarning("Sound not found: " + soundName);
         }
-        
-    }    
+    }
 
-    #endregion
+    public void SetBackgroundSound(string soundName, AudioClip clip = null)
+    {
+        Sound sound = Array.Find(sounds, s => s.name == soundName);
+        if (sound != null)
+        {
+            AudioSource.clip = clip != null ? clip : sound.clip;
+            AudioSource.Play();
+        }
+        else
+        {
+            Debug.LogWarning("Sound not found: " + soundName);
+        }
+    }
 
-    #region "Runner Methods"
-
-    public void PlayJump() => PlaySound(jumping);
-
-    public void PlayBgRunner() => SetBGSound(bgRunner);
-
-    #endregion
-
-    #region "Food Drop Methods"
-
-    public void PlayEating() => PlaySound(eating);
-
-    public void PlayFailure() => PlaySound(failure);
-
-    public void PlayBgInfinityJump() => SetBGSound(bgRunner);
-
-    #endregion
-
-    #region "Hill Drive Methods"
-
-    public void PlayFuel() => PlaySound(fuel);
-
-    public void PlayBgHillDrive() => SetBGSound(bgHillDrive);
-
-    #endregion
-
-    #region "Generals"
-
-    public void PlayCoin() => PlaySound(coin);
-
-    public void PlayDeath() => PlaySound(death);
-
-    public void PlayBgFoodDrop() => SetBGSound(bgFoodDropSound);
-
-    #endregion
+    [Serializable]
+    public class Sound
+    {
+        public string name;
+        public AudioClip clip;
+    }
 }

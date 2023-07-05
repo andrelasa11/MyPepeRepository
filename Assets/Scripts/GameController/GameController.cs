@@ -24,7 +24,7 @@ public abstract class GameController : MonoBehaviour
         if(scorePoints > 0)
         {
             score += scorePoints;
-            AudioManager.Instance.PlayCoin();
+            AudioManager.Instance.PlaySound("Coin");
             scoreUI.SetScoreValueText(score);
         }
         else
@@ -38,7 +38,7 @@ public abstract class GameController : MonoBehaviour
     public virtual void SetPlayerLives(int value)
     {
         playerLife += value;
-        AudioManager.Instance.PlayFailure();
+        AudioManager.Instance.PlaySound("Failure");
         lifeUI.SetValueText(playerLife);
 
         if (playerLife <= 0)
