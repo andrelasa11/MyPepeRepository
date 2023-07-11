@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GCRunner : GameController
 {
@@ -16,9 +17,15 @@ public class GCRunner : GameController
     [SerializeField] private float accelerationRate = 2f;
     [SerializeField] private float maxSpeed = 10f;
 
+    [Header("Exclusive Dependencies")]
+    [SerializeField] private Slider energyBar;
+    [SerializeField] private GameObject continueCanvas;
+
     public float Speed => speed;
     public float AccelerationRate => accelerationRate;
     public float MaxSpeed => maxSpeed;
+
+    private bool firstRun = true;
 
     private void Awake()
     {
@@ -38,6 +45,7 @@ public class GCRunner : GameController
         distanceUI.SetValueText(distance);
         Screen.orientation = ScreenOrientation.LandscapeLeft;
         StartCoroutine(nameof(DistanceRoutine));
+        energyBar.value = GameManager.Instance.Energy;
     }
 
     private void FixedUpdate()
@@ -74,5 +82,36 @@ public class GCRunner : GameController
         }
 
         base.OnGameOver();
+    }
+
+    public void AddEnergy(float value)
+    {
+        GameManager.Instance.PutToBed(value);
+        energyBar.value = GameManager.Instance.Energy;
+
+        if (GameManager.Instance.Energy >= 100 && firstRun)
+        {
+            OnContinueAsk();
+        }
+    }
+
+    private void OnContinueAsk()
+    {
+        Time.timeScale = 0;
+        continueCanvas.SetActive(true);
+    }
+
+    public void WannaContinue()
+    {
+        Time.timeScale = 1f;
+        firstRun = false;
+        continueCanvas.SetActive(false);
+    }
+
+    public void DontWannaContinue()
+    {
+        Time.timeScale = 1f;
+        OnGameOver();
+
     }
 }

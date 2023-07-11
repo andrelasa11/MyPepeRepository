@@ -55,6 +55,8 @@ public abstract class GameController : MonoBehaviour
 
         mainCanvas.SetActive(false);
         gameOverCanvas.SetActive(true);
+
+        GameManager.Instance.SaveGame();
     }
 
 }

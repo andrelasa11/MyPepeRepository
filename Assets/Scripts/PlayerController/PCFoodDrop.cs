@@ -25,6 +25,7 @@ public class PCFoodDrop : PlayerController
 
     public void DoEat()
     {
+        AudioManager.Instance.PlaySound("Frog");
         animator.SetTrigger("Eat");
     }
 }

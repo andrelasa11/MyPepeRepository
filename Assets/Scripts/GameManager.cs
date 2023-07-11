@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -26,6 +27,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float foodDropRecord;
     [SerializeField] private float hillDriveRecord;
     [SerializeField] private float runnerRecord;
+    [SerializeField] private PetController petController;
 
     //private
     private DateTime lastPlayTime;
@@ -63,6 +65,7 @@ public class GameManager : MonoBehaviour
     {
         lastPlayTime = DateTime.Now;
         LoadStatus();
+        petController.UpdateRecordTexts();
     }
     private void Update()
     {
@@ -82,11 +85,17 @@ public class GameManager : MonoBehaviour
         happiness = Mathf.Clamp(happiness, 0f, 100f);
 
         lastPlayTime = DateTime.Now;
+
     }
 
     #endregion
 
     #region "Save & Load Methods"
+
+    public void SaveGame()
+    {
+        SaveStatus();
+    }
 
     public void SetStatus(float newHunger, float newEnergy, float newHealth, float newHappiness)
     {
@@ -103,6 +112,7 @@ public class GameManager : MonoBehaviour
         if (saveLoadManager != null)
         {
             saveLoadManager.LoadGame();
+            Debug.Log("Jogo carregado");
         }
     }
 
@@ -113,6 +123,7 @@ public class GameManager : MonoBehaviour
         if (saveLoadManager != null)
         {
             saveLoadManager.SaveGame();
+            Debug.Log("Jogo salvo");
         }
     }
 
@@ -149,6 +160,8 @@ public class GameManager : MonoBehaviour
         SaveStatus();
     }
 
+    
+
     #endregion
 
     #region "Status Methods"
@@ -164,7 +177,7 @@ public class GameManager : MonoBehaviour
     {
         // Aumente o status de Sono quando o pet for colocado para dormir
         energy += value;
-        energy = Mathf.Clamp(value, 0f, 100f);
+        energy = Mathf.Clamp(energy, 0f, 100f);
     }
 
     public void HealPet(float value)
@@ -178,7 +191,7 @@ public class GameManager : MonoBehaviour
     {
         // Aumente o status de Diversão quando o pet brincar
         happiness += value;
-        happiness = Mathf.Clamp(value, 0f, 100f);
+        happiness = Mathf.Clamp(happiness, 0f, 100f);
     }
 
     #endregion

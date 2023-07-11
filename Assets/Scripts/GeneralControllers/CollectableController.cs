@@ -47,10 +47,13 @@ public class CollectableController : MonoBehaviour
                 if (collectableType == CollectableType.Coin)
                 {
                     GCRunner.Instance.SetScore(scorePoints);
+                    AudioManager.Instance.PlaySound("Frog");
+                    GCRunner.Instance.AddEnergy(2);
                 }
                 else if (collectableType == CollectableType.Fence)
                 {
                     GCRunner.Instance.SetScore(scorePoints * -1);
+                    GCRunner.Instance.AddEnergy(-2);
                     Debug.Log("Retirando " + scorePoints);
                     Animator animator = GetComponent<Animator>();
                     animator.SetBool("destroyed", true);

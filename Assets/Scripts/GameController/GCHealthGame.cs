@@ -16,8 +16,10 @@ public class GCHealthGame : GameController
     [SerializeField] private float cadenceToDecrease;
 
     [Header("Exclusive Dependencies")]
-    public Slider healthBar;
-    public AudioClip healthGameMusic;
+    [SerializeField] private Slider healthBar;
+    [SerializeField] private GameObject continueCanvas;
+
+    private bool firstRun = true;
 
     private void Awake()
     {
@@ -37,7 +39,7 @@ public class GCHealthGame : GameController
 
         AudioManager.Instance.SetBackgroundSound("BgHealthGame");
 
-        Screen.orientation = ScreenOrientation.LandscapeLeft;
+        Screen.orientation = ScreenOrientation.Landscape;
     }
 
     public override void OnGameOver()
@@ -55,11 +57,30 @@ public class GCHealthGame : GameController
     public void AddHealth (float value)
     {
         GameManager.Instance.HealPet(value);
-        healthBar.value += value;
+        healthBar.value = GameManager.Instance.Health;
 
-        if (healthBar.value >= 100)
+        if (GameManager.Instance.Health >= 100 && firstRun)
         {
-            OnGameOver();
+            OnContinueAsk();
         }
+    }
+    private void OnContinueAsk()
+    {
+        Time.timeScale = 0;
+        continueCanvas.SetActive(true);
+    }
+
+    public void WannaContinue()
+    {
+        Time.timeScale = 1f;
+        firstRun = false;
+        continueCanvas.SetActive(false);
+    }
+
+    public void DontWannaContinue()
+    {
+        Time.timeScale = 1f;
+        OnGameOver();
+
     }
 }

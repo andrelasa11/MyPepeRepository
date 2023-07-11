@@ -17,5 +17,5 @@ MonoBehaviour:
   sprite: {fileID: 21300000, guid: 00260e8736359ff41ad897d9b46973a0, type: 3}
   speed: 3
   animatorController: greenGerm
-  healthPoints: 2
+  healthPoints: 0.5
   score: 4

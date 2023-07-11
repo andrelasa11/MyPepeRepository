@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GCFoodDrop : GameController
 {
@@ -27,13 +28,15 @@ public class GCFoodDrop : GameController
 
     [Header("Exclusive Dependencies")]
     [SerializeField] private SpawnerController spawnerController;
-    public AudioClip foodDropMusic;
     [SerializeField] private PepperUI pepperUI;
     [SerializeField] private GameObject pepperGO;
+    [SerializeField] private Slider hungerhBar;
+    [SerializeField] private GameObject continueCanvas;
 
     // Food Properties
     [HideInInspector] public float foodSpeed;
     private bool isOnFire = false;
+    private bool firstRun = true;
 
     private void Awake()
     {
@@ -57,6 +60,10 @@ public class GCFoodDrop : GameController
         onFireCountdown = onFireWaitTime;
 
         pepperUI.SetValueText(onFireCountdown);
+
+        hungerhBar.value = GameManager.Instance.Hunger;
+
+        continueCanvas.SetActive(false);
     }
 
     #region "My Methods"
@@ -78,11 +85,12 @@ public class GCFoodDrop : GameController
         {
             AudioManager.Instance.PlaySound("Eating");
         }
+
+        AddFood(scorePoints);
     }
 
     public override void OnGameOver()
     {
-        //AudioManager.Instance.PlayDeath();
         totalScore = score;
 
         if (totalScore > GameManager.Instance.FoodDropRecord)
@@ -107,7 +115,44 @@ public class GCFoodDrop : GameController
             pepperUI.SetValueText(onFireCountdown);
         }
 
-    } 
+    }
+
+    private void AddFood(int value)
+    {
+        float valueToAdd;
+
+        valueToAdd = value / 3;
+
+        GameManager.Instance.FeedPet(valueToAdd);
+        hungerhBar.value = GameManager.Instance.Hunger;
+
+        if (GameManager.Instance.Hunger >= 100 && firstRun)
+        {
+            OnContinueAsk();
+        }
+
+        Debug.Log("Value To Add: " + valueToAdd);
+    }
+
+    private void OnContinueAsk()
+    {
+        Time.timeScale = 0;
+        continueCanvas.SetActive(true);
+    }
+
+    public void WannaContinue()
+    {
+        Time.timeScale = 1f;
+        firstRun = false;
+        continueCanvas.SetActive(false);        
+    }
+
+    public void DontWannaContinue()
+    {
+        Time.timeScale = 1f;
+        OnGameOver();
+
+    }
 
     #endregion
 

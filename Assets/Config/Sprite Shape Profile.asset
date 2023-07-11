@@ -17,17 +17,17 @@ MonoBehaviour:
     m_End: 22
     m_Order: 7
     m_Sprites:
-    - {fileID: 21300000, guid: 2047e49911c3b174abced471907056b6, type: 3}
+    - {fileID: 21300000, guid: 0c7d12b39ad0b0f4996fd0a3349b2044, type: 3}
   - m_Start: -67
     m_End: -22
     m_Order: 0
     m_Sprites:
-    - {fileID: 21300000, guid: 118c4646441483b40a94dba2d035433d, type: 3}
+    - {fileID: 21300000, guid: 0c7d12b39ad0b0f4996fd0a3349b2044, type: 3}
   - m_Start: 22
     m_End: 67
     m_Order: 0
     m_Sprites:
-    - {fileID: 21300000, guid: 118c4646441483b40a94dba2d035433d, type: 3}
+    - {fileID: 21300000, guid: 0c7d12b39ad0b0f4996fd0a3349b2044, type: 3}
   - m_Start: 67
     m_End: 155
     m_Order: 0

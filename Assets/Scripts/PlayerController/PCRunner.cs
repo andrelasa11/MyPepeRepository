@@ -10,7 +10,7 @@ public class PCRunner : PlayerController
 
     private int jumpCount = 0;
     private bool isGrounded;
-    private bool isJumping;
+    //private bool isJumping;
 
     #region Input Handling
     public void OnJump(InputAction.CallbackContext context)
@@ -48,7 +48,7 @@ public class PCRunner : PlayerController
         AudioManager.Instance.PlaySound("Jump");
         rigidBody.velocity = new Vector2(rigidBody.velocity.x, 0f);
         rigidBody.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
-        isJumping = true;
+        //isJumping = true;
         jumpCount++;
     }
    
@@ -56,7 +56,7 @@ public class PCRunner : PlayerController
     {
         if (isGrounded)
         {
-            isJumping = false;
+            //isJumping = false;
             jumpCount = 0;
         }
     }    

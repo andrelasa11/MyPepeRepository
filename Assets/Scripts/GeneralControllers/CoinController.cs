@@ -41,6 +41,7 @@ public class CoinController : MonoBehaviour
 
             case GameType.HillDrive:
                 GCHillDrive.Instance.SetScore(scorePoints);
+                GCHillDrive.Instance.AddHappiness(1);
                 break;
 
             case GameType.Runner:

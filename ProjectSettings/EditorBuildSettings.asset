@@ -5,19 +5,22 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/MainScene.unity
     guid: dcffdbfcd944d9946bc8971bb5c5ef40
-  - enabled: 0
+  - enabled: 1
+    path: Assets/Scenes/PetScene.unity
+    guid: 5d4bba253fbd13f4e8d1f7997e425cc8
+  - enabled: 1
     path: Assets/Scenes/FoodDrop.unity
     guid: f732068ffd0dc5f4797fc8db44393b6c
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/HillDrive.unity
     guid: 3125c1e8fd978104c9aff1093bccdbac
   - enabled: 1
     path: Assets/Scenes/HealthGame.unity
     guid: 00773453c27b3e149839143af6825852
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/Runner.unity
     guid: 80379a66de3804541841dca59152e68f
   m_configObjects:

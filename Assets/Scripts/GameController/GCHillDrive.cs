@@ -18,13 +18,16 @@ public class GCHillDrive : GameController
 
     [Header("Exclusive Dependencies")]
     [SerializeField] private PCHillDrive player;
-    [SerializeField] private AudioSource audioSource;    
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private Slider happinessBar;
+    [SerializeField] private GameObject continueCanvas;
 
     [Header("Exclusive UI")]
     public Image fuelUI;
 
     //hidden
     private Vector3 distanceReferencePoint;
+    private bool firstRun = true;
 
     #region "Awake/Start/Update"
 
@@ -45,6 +48,7 @@ public class GCHillDrive : GameController
         scoreUI.SetScoreValueText(score);
         distanceUI.SetValueText(distance);
         Screen.orientation = ScreenOrientation.LandscapeLeft;
+        happinessBar.value = GameManager.Instance.Happiness;
     }
 
     private void Update()
@@ -80,6 +84,13 @@ public class GCHillDrive : GameController
 
         base.OnGameOver();
     }
+
+    public override void SetScore(int scorePoints)
+    {
+        AudioManager.Instance.PlaySound("Frog");
+        base.SetScore(scorePoints);
+    }
+
     public void NoFuelGameOver()
     {
         StartCoroutine(GameOverCoroutine());
@@ -93,6 +104,37 @@ public class GCHillDrive : GameController
     {
         yield return new WaitForSeconds(2);
         OnGameOver();
+    }
+
+    public void AddHappiness(float value)
+    {
+        GameManager.Instance.PlayWithPet(value);
+        happinessBar.value = GameManager.Instance.Happiness;
+
+        if (GameManager.Instance.Happiness >= 100 && firstRun)
+        {
+            OnContinueAsk();
+        }
+    }
+
+    private void OnContinueAsk()
+    {
+        Time.timeScale = 0;
+        continueCanvas.SetActive(true);
+    }
+
+    public void WannaContinue()
+    {
+        Time.timeScale = 1f;
+        firstRun = false;
+        continueCanvas.SetActive(false);
+    }
+
+    public void DontWannaContinue()
+    {
+        Time.timeScale = 1f;
+        OnGameOver();
+
     }
 
     #endregion
