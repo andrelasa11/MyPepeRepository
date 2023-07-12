@@ -90,7 +90,7 @@ public class PCHealthGame : PlayerController
 
     private IEnumerator JumpRoutine()
     {
-        animator.SetFloat("Height", rigidBody.velocity.y);
+        animator.SetTrigger("Jump");
         isJumping = true;
         float elapsedTime = 0f;
         float initialVelocity = rigidBody.velocity.y;

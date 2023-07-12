@@ -3,9 +3,9 @@ using UnityEngine;
 public class GermController : MonoBehaviour
 {
     [Header("Germ Controller Settings")]
-    [SerializeField] private GermControllerSO[] germControllerSOs;
+    [SerializeField] private SOGermController[] germControllerSOs;
 
-    private GermControllerSO currentGermControllerSO;
+    private SOGermController currentGermControllerSO;
     private SpriteRenderer spriteRenderer;
     private float speed;
     private int scorePoints;

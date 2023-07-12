@@ -21,7 +21,9 @@ public class SaveLoadManager : MonoBehaviour
             foodDropRecord = GameManager.Instance.FoodDropRecord,
             healthGameRecord = GameManager.Instance.HealthGameRecord,
             hillDriveRecord = GameManager.Instance.HillDriveRecord,
-            runnerRecord = GameManager.Instance.RunnerRecord
+            runnerRecord = GameManager.Instance.RunnerRecord,
+            musicVolume = AudioManager.Instance.GetMusicVolume(),
+            soundEffectsVolume = AudioManager.Instance.GetSoundEffectsVolume()
         };
 
         string jsonData = JsonUtility.ToJson(gameData);
@@ -42,11 +44,18 @@ public class SaveLoadManager : MonoBehaviour
             GameManager.Instance.SetHealthGameRecord(gameData.healthGameRecord);
             GameManager.Instance.SetHillDriveRecord(gameData.hillDriveRecord);
             GameManager.Instance.SetRunnerRecord(gameData.runnerRecord);
+            AudioManager.Instance.SetMusicVolume(gameData.musicVolume);
+            AudioManager.Instance.SetSoundEffectsVolume(gameData.soundEffectsVolume);
         }
         else
         {
             Debug.Log("Save file not found.");
         }
+    }
+
+    public void SaveVolumePreferences()
+    {
+        SaveGame();
     }
 }
 
@@ -61,4 +70,6 @@ public class GameData
     public float healthGameRecord;
     public float hillDriveRecord;
     public float runnerRecord;
+    public float musicVolume;
+    public float soundEffectsVolume;
 }

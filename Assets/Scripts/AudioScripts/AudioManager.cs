@@ -8,7 +8,11 @@ public class AudioManager : MonoBehaviour
     [Header("Audio Clips")]
     public Sound[] sounds;
 
-    public AudioSource AudioSource { get; private set; }
+    public AudioSource musicSource;
+    public AudioSource soundEffectsSource;
+
+    private float musicVolume = 1f;
+    private float soundEffectsVolume = 1f;
 
     private void Awake()
     {
@@ -21,16 +25,20 @@ public class AudioManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
         }
-
-        AudioSource = GetComponent<AudioSource>();
     }
 
-    public void PlaySound(string soundName, AudioClip clip = null)
+    private void Start()
+    {
+        UpdateMusicVolume();
+        UpdateSoundEffectsVolume();
+    }
+
+    public void PlaySound(string soundName)
     {
         Sound sound = Array.Find(sounds, s => s.name == soundName);
         if (sound != null)
         {
-            AudioSource.PlayOneShot(clip != null ? clip : sound.clip);
+            soundEffectsSource.PlayOneShot(sound.clip);
         }
         else
         {
@@ -38,18 +46,50 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public void SetBackgroundSound(string soundName, AudioClip clip = null)
+    public void SetBackgroundSound(string soundName)
     {
         Sound sound = Array.Find(sounds, s => s.name == soundName);
         if (sound != null)
         {
-            AudioSource.clip = clip != null ? clip : sound.clip;
-            AudioSource.Play();
+            musicSource.clip = sound.clip;
+            musicSource.Play();
         }
         else
         {
             Debug.LogWarning("Sound not found: " + soundName);
         }
+    }
+
+    public void SetMusicVolume(float volume)
+    {
+        musicVolume = volume;
+        UpdateMusicVolume();
+    }
+
+    public float GetMusicVolume()
+    {
+        return musicVolume;
+    }
+
+    private void UpdateMusicVolume()
+    {
+        musicSource.volume = musicVolume;
+    }
+
+    public void SetSoundEffectsVolume(float volume)
+    {
+        soundEffectsVolume = volume;
+        UpdateSoundEffectsVolume();
+    }
+
+    public float GetSoundEffectsVolume()
+    {
+        return soundEffectsVolume;
+    }
+
+    private void UpdateSoundEffectsVolume()
+    {
+        soundEffectsSource.volume = soundEffectsVolume;
     }
 
     [Serializable]
