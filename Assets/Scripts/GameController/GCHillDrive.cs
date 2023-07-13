@@ -20,14 +20,12 @@ public class GCHillDrive : GameController
     [SerializeField] private PCHillDrive player;
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private Slider happinessBar;
-    [SerializeField] private GameObject continueCanvas;
 
     [Header("Exclusive UI")]
     public Image fuelUI;
 
     //hidden
     private Vector3 distanceReferencePoint;
-    private bool firstRun = true;
 
     #region "Awake/Start/Update"
 
@@ -111,26 +109,20 @@ public class GCHillDrive : GameController
         GameManager.Instance.PlayWithPet(value);
         happinessBar.value = GameManager.Instance.Happiness;
 
-        if (GameManager.Instance.Happiness >= 100 && firstRun)
+        if (GameManager.Instance.Happiness >= 100)
         {
-            OnContinueAsk();
+            DoTheReward();
         }
     }
 
-    private void OnContinueAsk()
+    private void DoTheReward()
     {
+        GameManager.Instance.AddMoney(GameManager.Instance.GameReward);
         Time.timeScale = 0;
-        continueCanvas.SetActive(true);
+        rewardCanvas.SetActive(true);
     }
 
-    public void WannaContinue()
-    {
-        Time.timeScale = 1f;
-        firstRun = false;
-        continueCanvas.SetActive(false);
-    }
-
-    public void DontWannaContinue()
+    public void DoBackToLobby()
     {
         Time.timeScale = 1f;
         OnGameOver();

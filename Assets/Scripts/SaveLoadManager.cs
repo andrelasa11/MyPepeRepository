@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using UnityEngine;
 
@@ -14,6 +15,7 @@ public class SaveLoadManager : MonoBehaviour
     {
         GameData gameData = new GameData
         {
+            money = GameManager.Instance.Money,
             hunger = GameManager.Instance.Hunger,
             energy = GameManager.Instance.Energy,
             health = GameManager.Instance.Health,
@@ -23,7 +25,8 @@ public class SaveLoadManager : MonoBehaviour
             hillDriveRecord = GameManager.Instance.HillDriveRecord,
             runnerRecord = GameManager.Instance.RunnerRecord,
             musicVolume = AudioManager.Instance.GetMusicVolume(),
-            soundEffectsVolume = AudioManager.Instance.GetSoundEffectsVolume()
+            soundEffectsVolume = AudioManager.Instance.GetSoundEffectsVolume(),
+            saveTime = DateTime.Now // Adiciona o horário de salvamento
         };
 
         string jsonData = JsonUtility.ToJson(gameData);
@@ -31,7 +34,7 @@ public class SaveLoadManager : MonoBehaviour
         File.WriteAllText(saveFilePath, jsonData);
     }
 
-    public void LoadGame()
+    public void LoadGame(DateTime lastPlayTime)
     {
         if (File.Exists(saveFilePath))
         {
@@ -39,13 +42,23 @@ public class SaveLoadManager : MonoBehaviour
 
             GameData gameData = JsonUtility.FromJson<GameData>(jsonData);
 
-            GameManager.Instance.SetStatus(gameData.hunger, gameData.energy, gameData.health, gameData.happiness);
+            GameManager.Instance.SetStatus(gameData.money, gameData.hunger, gameData.energy, gameData.health, gameData.happiness);
             GameManager.Instance.SetFoodDropRecord(gameData.foodDropRecord);
             GameManager.Instance.SetHealthGameRecord(gameData.healthGameRecord);
             GameManager.Instance.SetHillDriveRecord(gameData.hillDriveRecord);
             GameManager.Instance.SetRunnerRecord(gameData.runnerRecord);
             AudioManager.Instance.SetMusicVolume(gameData.musicVolume);
             AudioManager.Instance.SetSoundEffectsVolume(gameData.soundEffectsVolume);
+
+            lastPlayTime = gameData.saveTime; // Atualiza o lastPlayTime com o horário de salvamento
+
+            TimeSpan inactiveTime = DateTime.Now - lastPlayTime;
+            if (inactiveTime.TotalHours > 0)
+            {
+                GameManager.Instance.CalculateInactiveTimeDecrease(); // Atualiza os status com base no tempo inativo
+            }
+
+            Debug.Log("Jogo carregado");
         }
         else
         {
@@ -53,23 +66,20 @@ public class SaveLoadManager : MonoBehaviour
         }
     }
 
-    public void SaveVolumePreferences()
+    [System.Serializable]
+    public class GameData
     {
-        SaveGame();
+        public float money;
+        public float hunger;
+        public float energy;
+        public float health;
+        public float happiness;
+        public float foodDropRecord;
+        public float healthGameRecord;
+        public float hillDriveRecord;
+        public float runnerRecord;
+        public float musicVolume;
+        public float soundEffectsVolume;
+        public DateTime saveTime;
     }
-}
-
-[System.Serializable]
-public class GameData
-{
-    public float hunger;
-    public float energy;
-    public float health;
-    public float happiness;
-    public float foodDropRecord;
-    public float healthGameRecord;
-    public float hillDriveRecord;
-    public float runnerRecord;
-    public float musicVolume;
-    public float soundEffectsVolume;
 }

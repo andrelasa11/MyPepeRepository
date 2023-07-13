@@ -15,6 +15,9 @@ public class PetController : MonoBehaviour
     public Text hillDriveRecordText;
     public Text runnerRecordText;
 
+    [Header("MoneyTxt")]
+    public Text moneyText;
+
     private GameManager gameManager;
 
     private void Start()
@@ -22,6 +25,7 @@ public class PetController : MonoBehaviour
         gameManager = GameManager.Instance;
 
         UpdateRecordTexts();
+        UpdateMoneyText();
         Screen.orientation = ScreenOrientation.Portrait;
         AudioManager.Instance.SetBackgroundSound("BgLobby");
     }
@@ -46,6 +50,11 @@ public class PetController : MonoBehaviour
         healthGameRecordText.text = gameManager.HealthGameRecord.ToString("N0");
         hillDriveRecordText.text = gameManager.HillDriveRecord.ToString("N0");
         runnerRecordText.text = gameManager.RunnerRecord.ToString("N0");
+    }
+
+    public void UpdateMoneyText()
+    {
+        moneyText.text = gameManager.Money.ToString("N2");
     }
 
 }

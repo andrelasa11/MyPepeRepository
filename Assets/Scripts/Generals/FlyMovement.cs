@@ -7,13 +7,13 @@ public class FlyMovement : MonoBehaviour
 
     public float minX, maxX, minY, maxY; // Limites do mapa
 
-    public AudioSource audioSource;
-
     private Vector3 targetPosition; // Posição de destino atual
     private bool isMoving = false; // Flag para controlar o movimento
 
     private bool isFacingRight = true; // Flag para indicar a direção da mosca
     private float moveSpeed;
+
+    public AudioSource audioSource;
 
     private void Start()
     {

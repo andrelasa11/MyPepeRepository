@@ -31,12 +31,10 @@ public class GCFoodDrop : GameController
     [SerializeField] private PepperUI pepperUI;
     [SerializeField] private GameObject pepperGO;
     [SerializeField] private Slider hungerhBar;
-    [SerializeField] private GameObject continueCanvas;
 
     // Food Properties
     [HideInInspector] public float foodSpeed;
     private bool isOnFire = false;
-    private bool firstRun = true;
 
     private void Awake()
     {
@@ -63,7 +61,7 @@ public class GCFoodDrop : GameController
 
         hungerhBar.value = GameManager.Instance.Hunger;
 
-        continueCanvas.SetActive(false);
+        rewardCanvas.SetActive(false);
     }
 
     #region "My Methods"
@@ -126,28 +124,22 @@ public class GCFoodDrop : GameController
         GameManager.Instance.FeedPet(valueToAdd);
         hungerhBar.value = GameManager.Instance.Hunger;
 
-        if (GameManager.Instance.Hunger >= 100 && firstRun)
+        if (GameManager.Instance.Hunger >= 100)
         {
-            OnContinueAsk();
+            DoTheReward();
         }
 
         Debug.Log("Value To Add: " + valueToAdd);
     }
 
-    private void OnContinueAsk()
+    private void DoTheReward()
     {
+        GameManager.Instance.AddMoney(GameManager.Instance.GameReward);
         Time.timeScale = 0;
-        continueCanvas.SetActive(true);
+        rewardCanvas.SetActive(true);
     }
 
-    public void WannaContinue()
-    {
-        Time.timeScale = 1f;
-        firstRun = false;
-        continueCanvas.SetActive(false);        
-    }
-
-    public void DontWannaContinue()
+    public void DoBackToLobby()
     {
         Time.timeScale = 1f;
         OnGameOver();

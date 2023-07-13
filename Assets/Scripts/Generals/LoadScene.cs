@@ -1,10 +1,8 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class LoadScene : MonoBehaviour
 {
-
     public void DoLoadScene(string scene)
     {
         SceneManager.LoadScene(scene);

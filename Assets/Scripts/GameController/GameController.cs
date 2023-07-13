@@ -13,6 +13,7 @@ public abstract class GameController : MonoBehaviour
     [Header("Dependencies")]
     [SerializeField] protected GameObject mainCanvas;
     [SerializeField] protected GameObject gameOverCanvas;
+    [SerializeField] protected GameObject rewardCanvas;
 
     [Header("UI")]
     [SerializeField] protected DistanceUI distanceUI;

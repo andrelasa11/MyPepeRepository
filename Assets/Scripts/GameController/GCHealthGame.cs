@@ -17,9 +17,6 @@ public class GCHealthGame : GameController
 
     [Header("Exclusive Dependencies")]
     [SerializeField] private Slider healthBar;
-    [SerializeField] private GameObject continueCanvas;
-
-    private bool firstRun = true;
 
     private void Awake()
     {
@@ -59,25 +56,19 @@ public class GCHealthGame : GameController
         GameManager.Instance.HealPet(value);
         healthBar.value = GameManager.Instance.Health;
 
-        if (GameManager.Instance.Health >= 100 && firstRun)
+        if (GameManager.Instance.Health >= 100)
         {
-            OnContinueAsk();
+            DoTheReward();
         }
     }
-    private void OnContinueAsk()
+    private void DoTheReward()
     {
+        GameManager.Instance.AddMoney(GameManager.Instance.GameReward);
         Time.timeScale = 0;
-        continueCanvas.SetActive(true);
+        rewardCanvas.SetActive(true);
     }
 
-    public void WannaContinue()
-    {
-        Time.timeScale = 1f;
-        firstRun = false;
-        continueCanvas.SetActive(false);
-    }
-
-    public void DontWannaContinue()
+    public void DoBackToLobby()
     {
         Time.timeScale = 1f;
         OnGameOver();

@@ -19,13 +19,10 @@ public class GCRunner : GameController
 
     [Header("Exclusive Dependencies")]
     [SerializeField] private Slider energyBar;
-    [SerializeField] private GameObject continueCanvas;
 
     public float Speed => speed;
     public float AccelerationRate => accelerationRate;
     public float MaxSpeed => maxSpeed;
-
-    private bool firstRun = true;
 
     private void Awake()
     {
@@ -89,26 +86,20 @@ public class GCRunner : GameController
         GameManager.Instance.PutToBed(value);
         energyBar.value = GameManager.Instance.Energy;
 
-        if (GameManager.Instance.Energy >= 100 && firstRun)
+        if (GameManager.Instance.Energy >= 100)
         {
-            OnContinueAsk();
+            DoTheReward();
         }
     }
 
-    private void OnContinueAsk()
+    private void DoTheReward()
     {
+        GameManager.Instance.AddMoney(GameManager.Instance.GameReward);
         Time.timeScale = 0;
-        continueCanvas.SetActive(true);
+        rewardCanvas.SetActive(true);
     }
 
-    public void WannaContinue()
-    {
-        Time.timeScale = 1f;
-        firstRun = false;
-        continueCanvas.SetActive(false);
-    }
-
-    public void DontWannaContinue()
+    public void DoBackToLobby()
     {
         Time.timeScale = 1f;
         OnGameOver();
