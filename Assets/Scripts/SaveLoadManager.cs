@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using UnityEngine;
 
@@ -16,6 +17,7 @@ public class SaveLoadManager : MonoBehaviour
         GameData gameData = new GameData
         {
             money = GameManager.Instance.Money,
+            numOfPets = GameManager.Instance.NumOfPets,
             hunger = GameManager.Instance.Hunger,
             energy = GameManager.Instance.Energy,
             health = GameManager.Instance.Health,
@@ -26,7 +28,9 @@ public class SaveLoadManager : MonoBehaviour
             runnerRecord = GameManager.Instance.RunnerRecord,
             musicVolume = AudioManager.Instance.GetMusicVolume(),
             soundEffectsVolume = AudioManager.Instance.GetSoundEffectsVolume(),
-            saveTime = DateTime.Now // Adiciona o horário de salvamento
+            saveTime = DateTime.Now, // Adiciona o horário de salvamento
+            saveTimeText = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
+
         };
 
         string jsonData = JsonUtility.ToJson(gameData);
@@ -34,7 +38,7 @@ public class SaveLoadManager : MonoBehaviour
         File.WriteAllText(saveFilePath, jsonData);
     }
 
-    public void LoadGame(DateTime lastPlayTime)
+    public void LoadGame(ref DateTime lastPlaySaved)
     {
         if (File.Exists(saveFilePath))
         {
@@ -42,7 +46,10 @@ public class SaveLoadManager : MonoBehaviour
 
             GameData gameData = JsonUtility.FromJson<GameData>(jsonData);
 
-            GameManager.Instance.SetStatus(gameData.money, gameData.hunger, gameData.energy, gameData.health, gameData.happiness);
+            DateTime saveTime = DateTime.ParseExact(gameData.saveTimeText, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+            gameData.saveTime = saveTime;
+
+            GameManager.Instance.SetStatus(gameData.money, gameData.numOfPets, gameData.hunger, gameData.energy, gameData.health, gameData.happiness);
             GameManager.Instance.SetFoodDropRecord(gameData.foodDropRecord);
             GameManager.Instance.SetHealthGameRecord(gameData.healthGameRecord);
             GameManager.Instance.SetHillDriveRecord(gameData.hillDriveRecord);
@@ -50,12 +57,12 @@ public class SaveLoadManager : MonoBehaviour
             AudioManager.Instance.SetMusicVolume(gameData.musicVolume);
             AudioManager.Instance.SetSoundEffectsVolume(gameData.soundEffectsVolume);
 
-            lastPlayTime = gameData.saveTime; // Atualiza o lastPlayTime com o horário de salvamento
+            lastPlaySaved = gameData.saveTime; // Atualiza o lastPlayTime com o horário de salvamento
 
-            TimeSpan inactiveTime = DateTime.Now - lastPlayTime;
+            TimeSpan inactiveTime = DateTime.Now - lastPlaySaved;
             if (inactiveTime.TotalHours > 0)
             {
-                GameManager.Instance.CalculateInactiveTimeDecrease(); // Atualiza os status com base no tempo inativo
+                GameManager.Instance.CalculateInactiveTimeDecrease(inactiveTime); // Passa o tempo inativo para o método
             }
 
             Debug.Log("Jogo carregado");
@@ -66,10 +73,11 @@ public class SaveLoadManager : MonoBehaviour
         }
     }
 
-    [System.Serializable]
+    [Serializable]
     public class GameData
     {
         public float money;
+        public int numOfPets;
         public float hunger;
         public float energy;
         public float health;
@@ -81,5 +89,6 @@ public class SaveLoadManager : MonoBehaviour
         public float musicVolume;
         public float soundEffectsVolume;
         public DateTime saveTime;
+        public string saveTimeText;
     }
 }

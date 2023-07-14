@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class Follow : MonoBehaviour
 {
-
     [Header("Dependencies")]
     [SerializeField] private Transform target;
 
@@ -12,5 +11,4 @@ public class Follow : MonoBehaviour
     void Start() => offset = transform.position - target.position;
 
     void Update() => transform.position = target.position + offset;
-
 }

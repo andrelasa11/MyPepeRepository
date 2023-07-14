@@ -20,15 +20,6 @@ public class SpawnerCannonController : MonoBehaviour
             spawnCoroutine = StartCoroutine(SpawnGerm());
     }
 
-    private void StopSpawning()
-    {
-        if (spawnCoroutine != null)
-        {
-            StopCoroutine(spawnCoroutine);
-            spawnCoroutine = null;
-        }
-    }
-
     private IEnumerator SpawnGerm()
     {
         yield return new WaitForSeconds(initialSpawnDelay);

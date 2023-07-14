@@ -2,76 +2,71 @@ using UnityEngine;
 
 public class FlyMovement : MonoBehaviour
 {
-    public float minMoveSpeed = 2f; // Velocidade mínima de movimento das moscas
-    public float maxMoveSpeed = 4f; // Velocidade máxima de movimento das moscas
+    [Header("Movement Settings")]
+    [SerializeField] private float minMoveSpeed = 2f;
+    [SerializeField] private float maxMoveSpeed = 4f;
+    [SerializeField] private float minX, maxX, minY, maxY;
 
-    public float minX, maxX, minY, maxY; // Limites do mapa
-
-    private Vector3 targetPosition; // Posição de destino atual
-    private bool isMoving = false; // Flag para controlar o movimento
-
-    private bool isFacingRight = true; // Flag para indicar a direção da mosca
-    private float moveSpeed;
-
+    [Header("Audio")]
     public AudioSource audioSource;
+
+    //private
+    private Vector3 targetPosition;
+    private bool isMoving = false;
+    private float moveSpeed;
+    private bool isFacingRight = true;
 
     private void Start()
     {
-        // Definir a velocidade inicial aleatória
         moveSpeed = Random.Range(minMoveSpeed, maxMoveSpeed);
-
-        // Iniciar o movimento
         SetNewRandomTarget();
-
         audioSource.Play();
     }
 
     private void Update()
     {
-        // Verificar se a mosca atingiu o destino
-        if (isMoving && Vector3.Distance(transform.position, targetPosition) < 0.1f)
-        {
-            isMoving = false;
-            SetNewRandomTarget();
-        }
-
-        // Se estiver se movendo, atualizar a posição
         if (isMoving)
         {
-            transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
+            if (Vector3.SqrMagnitude(transform.position - targetPosition) < 0.1f * 0.1f)
+            {
+                isMoving = false;
+                SetNewRandomTarget();
+            }
+            else
+            {
+                MoveTowardsTarget();
+            }
         }
     }
 
     private void SetNewRandomTarget()
     {
-        // Gerar uma nova posição aleatória dentro dos limites do mapa
         float randomX = Random.Range(minX, maxX);
         float randomY = Random.Range(minY, maxY);
         targetPosition = new Vector3(randomX, randomY, transform.position.z);
 
-        // Calcular a nova direção
-        Vector3 direction = (targetPosition - transform.position).normalized;
+        UpdateFacingDirection();
 
-        // Verificar a direção da mosca e ajustar a escala (flip) se necessário
-        if (direction.x > 0 && !isFacingRight)
-        {
-            Flip();
-        }
-        else if (direction.x < 0 && isFacingRight)
-        {
-            Flip();
-        }
-
-        // Iniciar o movimento
         isMoving = true;
     }
 
+    private void UpdateFacingDirection()
+    {
+        Vector3 direction = targetPosition - transform.position;
+        Quaternion targetRotation = Quaternion.LookRotation(Vector3.forward, direction);
+        transform.rotation = targetRotation;
+
+        if (direction.x > 0 && !isFacingRight || direction.x < 0 && isFacingRight)
+        {
+            Flip();
+        }
+    }
+
+    private void MoveTowardsTarget() => transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
+
     private void Flip()
     {
-        // Inverter a escala da mosca para virar para o outro lado
-        transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
-
-        // Alternar a direção da mosca
         isFacingRight = !isFacingRight;
+        transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
     }
 }

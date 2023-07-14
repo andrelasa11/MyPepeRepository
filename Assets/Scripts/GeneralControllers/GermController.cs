@@ -41,7 +41,7 @@ public class GermController : MonoBehaviour
 
     private void Update() => Move();
 
-    private void Move() => transform.Translate(Vector2.left * speed * Time.deltaTime);
+    private void Move() => transform.Translate(speed * Time.deltaTime * Vector2.left);
 
     public void AddScoreAndHealth() => UpdateScoreAndHealth(scorePoints, healthPoints);
 

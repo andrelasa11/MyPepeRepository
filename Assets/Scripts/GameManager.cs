@@ -4,11 +4,10 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    #region "Singleton"
+    #region Singleton
 
     private static GameManager instance;
-
-    public static GameManager Instance { get { return instance; } }
+    public static GameManager Instance => instance;
 
     #endregion
 
@@ -16,7 +15,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float money;
     [SerializeField] private float gameTax;
     [SerializeField] private float gameReward;
-    [SerializeField] private float statusDecreaseRate = 16.67f; // Status decrease rate per hour
+    [SerializeField] private float eggPrice = 20;
+    [SerializeField] private float statusDecreaseRate = 16.67f;
+    [SerializeField] private int numOfPets;
 
     [Header("PetStatus")]
     [SerializeField] private float health;
@@ -29,28 +30,34 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float foodDropRecord;
     [SerializeField] private float hillDriveRecord;
     [SerializeField] private float runnerRecord;
-    [SerializeField] private PetController petController;
 
-    // Private
+    #region Private Variables
+
+    private PetController petController;
     private DateTime lastPlayTime;
-
-    #region "Properties"
-
-    public float Money { get { return money; } }
-    public float GameTax { get { return gameTax; } }
-    public float GameReward { get { return gameReward; } }
-    public float Hunger { get { return hunger; } }
-    public float Energy { get { return energy; } }
-    public float Health { get { return health; } }
-    public float Happiness { get { return happiness; } }
-    public float FoodDropRecord { get { return foodDropRecord; } }
-    public float HealthGameRecord { get { return healthGameRecord; } }
-    public float HillDriveRecord { get { return hillDriveRecord; } }
-    public float RunnerRecord { get { return runnerRecord; } }
+    private DateTime lastPlaySaved;
 
     #endregion
 
-    #region "Awake/Start/Update"
+    #region Properties
+
+    public float Money => money;
+    public int NumOfPets => numOfPets;
+    public float GameTax => gameTax;
+    public float GameReward => gameReward;
+    public float EggPrice => eggPrice;
+    public float Hunger => hunger;
+    public float Energy => energy;
+    public float Health => health;
+    public float Happiness => happiness;
+    public float FoodDropRecord => foodDropRecord;
+    public float HealthGameRecord => healthGameRecord;
+    public float HillDriveRecord => hillDriveRecord;
+    public float RunnerRecord => runnerRecord;
+
+    #endregion
+
+    #region MonoBehaviour Callbacks
 
     private void Awake()
     {
@@ -68,60 +75,80 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         petController = FindObjectOfType<PetController>();
-        SceneManager.sceneLoaded += OnSceneLoaded; // Adicione o evento OnSceneLoaded ao SceneManager
+        SceneManager.sceneLoaded += OnSceneLoaded;
 
         lastPlayTime = DateTime.Now;
-        LoadStatus();
-        petController.UpdateRecordTexts();
+        LoadGame();
 
-        SaveLoadManager saveLoadManager = FindObjectOfType<SaveLoadManager>();
-        if (saveLoadManager != null)
-        {
-            saveLoadManager.LoadGame(lastPlayTime);
-        }
+        Debug.Log("Jogo carregado");
     }
 
     private void Update()
     {
-        TimeSpan timeSinceLastPlay = DateTime.Now - lastPlayTime;
-        float decreaseAmount = statusDecreaseRate * (float)timeSinceLastPlay.TotalHours;
+        UpdateStatus();
+        UpdatePetController();
+    }
 
-        hunger -= decreaseAmount;
-        energy -= decreaseAmount;
-        health -= decreaseAmount;
-        happiness -= decreaseAmount;
+    private void OnApplicationQuit()
+    {
+        SaveGame();
+    }
 
-        hunger = Mathf.Clamp(hunger, 0f, 100f);
-        energy = Mathf.Clamp(energy, 0f, 100f);
-        health = Mathf.Clamp(health, 0f, 100f);
-        happiness = Mathf.Clamp(happiness, 0f, 100f);
-
-        lastPlayTime = DateTime.Now;
-
-        if (petController != null)
-        {
-            petController.UpdateMoneyText();
-        }
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     #endregion
 
-    #region "Save & Load Methods"
+    #region Status and Updates
 
-    public void CalculateInactiveTimeDecrease()
+    private void UpdateStatus()
     {
-        TimeSpan inactiveTime = DateTime.Now - lastPlayTime;
+        TimeSpan timeSinceLastPlay = DateTime.Now - lastPlayTime;
+        float decreaseAmount = statusDecreaseRate * (float)timeSinceLastPlay.TotalHours;
+
+        hunger = Mathf.Clamp(hunger - decreaseAmount, 0f, 100f);
+        energy = Mathf.Clamp(energy - decreaseAmount, 0f, 100f);
+        health = Mathf.Clamp(health - decreaseAmount, 0f, 100f);
+        happiness = Mathf.Clamp(happiness - decreaseAmount, 0f, 100f);
+
+        lastPlayTime = DateTime.Now;
+    }
+
+    private void UpdatePetController()
+    {
+        petController?.UpdateMoneyText();
+        petController?.UpdateRecordTexts();
+    }
+
+    #endregion
+
+    #region Scene Management
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        petController = FindObjectOfType<PetController>();
+    }
+
+    #endregion
+
+    #region Save and Load
+
+    private void LoadGame()
+    {
+        SaveLoadManager saveLoadManager = FindObjectOfType<SaveLoadManager>();
+        saveLoadManager?.LoadGame(ref lastPlaySaved);
+    }
+
+    public void CalculateInactiveTimeDecrease(TimeSpan inactiveTime)
+    {
         float decreaseAmount = statusDecreaseRate * (float)inactiveTime.TotalHours;
 
-        hunger -= decreaseAmount;
-        energy -= decreaseAmount;
-        health -= decreaseAmount;
-        happiness -= decreaseAmount;
-
-        hunger = Mathf.Clamp(hunger, 0f, 100f);
-        energy = Mathf.Clamp(energy, 0f, 100f);
-        health = Mathf.Clamp(health, 0f, 100f);
-        happiness = Mathf.Clamp(happiness, 0f, 100f);
+        hunger = Mathf.Clamp(hunger - decreaseAmount, 0f, 100f);
+        energy = Mathf.Clamp(energy - decreaseAmount, 0f, 100f);
+        health = Mathf.Clamp(health - decreaseAmount, 0f, 100f);
+        happiness = Mathf.Clamp(happiness - decreaseAmount, 0f, 100f);
 
         lastPlayTime = DateTime.Now;
 
@@ -131,47 +158,28 @@ public class GameManager : MonoBehaviour
     public void SaveGame()
     {
         SaveStatus();
-    }
-
-    public void SetStatus(float newMoney, float newHunger, float newEnergy, float newHealth, float newHappiness)
-    {
-        money = newMoney;
-        hunger = newHunger;
-        energy = newEnergy;
-        health = newHealth;
-        happiness = newHappiness;
-    }
-
-    private void LoadStatus()
-    {
-        SaveLoadManager saveLoadManager = FindObjectOfType<SaveLoadManager>();
-
-        if (saveLoadManager != null)
-        {
-            saveLoadManager.LoadGame(lastPlayTime);
-            Debug.Log("Jogo carregado");
-        }
+        Debug.Log("Jogo salvo");
     }
 
     private void SaveStatus()
     {
         SaveLoadManager saveLoadManager = FindObjectOfType<SaveLoadManager>();
-
-        if (saveLoadManager != null)
-        {
-            saveLoadManager.SaveGame();
-            Debug.Log("Jogo salvo");
-        }
-    }
-
-    private void OnApplicationQuit()
-    {
-        SaveStatus();
+        saveLoadManager?.SaveGame();
     }
 
     #endregion
 
-    #region "Record Methods"
+    #region Setters
+
+    public void SetStatus(float newMoney, int newNumOfPets, float newHunger, float newEnergy, float newHealth, float newHappiness)
+    {
+        money = newMoney;
+        numOfPets = newNumOfPets;
+        hunger = newHunger;
+        energy = newEnergy;
+        health = newHealth;
+        happiness = newHappiness;
+    }
 
     public void SetHealthGameRecord(float value)
     {
@@ -199,76 +207,38 @@ public class GameManager : MonoBehaviour
 
     #endregion
 
-    #region "Status Methods"
+    #region Actions
 
     public void FeedPet(float value)
     {
-        hunger += value;
-        hunger = Mathf.Clamp(hunger, 0f, 100f);
+        hunger = Mathf.Clamp(hunger + value, 0f, 100f);
     }
 
     public void PutToBed(float value)
     {
-        energy += value;
-        energy = Mathf.Clamp(energy, 0f, 100f);
+        energy = Mathf.Clamp(energy + value, 0f, 100f);
     }
 
     public void HealPet(float value)
     {
-        health += value;
-        health = Mathf.Clamp(health, 0f, 100f);
+        health = Mathf.Clamp(health + value, 0f, 100f);
     }
 
     public void PlayWithPet(float value)
     {
-        happiness += value;
-        happiness = Mathf.Clamp(happiness, 0f, 100f);
+        happiness = Mathf.Clamp(happiness + value, 0f, 100f);
     }
-
-    #endregion
-
-    #region "Inactive Time Update"
-
-    public void UpdateStatusFromInactiveTime()
-    {
-        DateTime saveTime = DateTime.Now;
-        TimeSpan inactiveTime = saveTime - lastPlayTime;
-
-        float decreaseAmount = statusDecreaseRate * (float)inactiveTime.TotalHours;
-
-        hunger -= decreaseAmount;
-        energy -= decreaseAmount;
-        health -= decreaseAmount;
-        happiness -= decreaseAmount;
-
-        hunger = Mathf.Clamp(hunger, 0f, 100f);
-        energy = Mathf.Clamp(energy, 0f, 100f);
-        health = Mathf.Clamp(health, 0f, 100f);
-        happiness = Mathf.Clamp(happiness, 0f, 100f);
-
-        lastPlayTime = saveTime;
-
-        Debug.Log("Método chamado! Tempo inativo: " + inactiveTime);
-    }
-
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        petController = FindObjectOfType<PetController>(); // Atualize a referência do petController
-    }
-
-    private void OnDestroy()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded; // Remova o evento OnSceneLoaded do SceneManager
-    }
-
-    #endregion
 
     public void AddMoney(float value)
     {
         money += value;
-        if (petController != null)
-        {
-            petController.UpdateMoneyText();
-        }
+        petController?.UpdateMoneyText();
     }
+
+    public void AddPet(int value)
+    {
+        numOfPets += value;
+    }
+
+    #endregion
 }

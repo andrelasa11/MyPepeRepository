@@ -6,7 +6,7 @@ using System.Collections;
 public class LoadingSceneController : MonoBehaviour
 {
     public Slider slider;
-    [SerializeField] private string sceneToLoad;
+    [SerializeField] private string petScene;
 
     void Start()
     {
@@ -20,7 +20,7 @@ public class LoadingSceneController : MonoBehaviour
 
     private IEnumerator LoadGame()
     {
-        AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(sceneToLoad); // Substitua "NomeDaCena" pelo nome da sua cena de jogo
+        AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(petScene); // Substitua "NomeDaCena" pelo nome da sua cena de jogo
 
         while (!asyncOperation.isDone)
         {

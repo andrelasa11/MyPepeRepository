@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CoinController : MonoBehaviour
@@ -10,26 +9,6 @@ public class CoinController : MonoBehaviour
 
     [Header("Dependencies")]
     [SerializeField] private SpriteRenderer spriteRenderer;
-    //[SerializeField] private List<SOCoin> coinConfigs;
-
-    //private
-   // private int coinConfigIndex;
-
-    void Start()
-    {
-        //RandomConfig();
-    }
-
-    public void RandomConfig()
-    {
-       /* if(coinConfigs != null)
-        {
-            coinConfigIndex = Random.Range(0, coinConfigs.Count);
-
-            spriteRenderer.sprite = coinConfigs[coinConfigIndex].sprite; // Instanciamento do SO;
-            scorePoints = coinConfigs[coinConfigIndex].scorePoints; // Instanciamento do SO;
-        }        */
-    }
 
     public void AddScore()
     {

@@ -19,7 +19,7 @@ public class UpsideDownChecker : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.CompareTag("Limits"))
+        if (collision.CompareTag("Limits"))
         {
             StartCoroutine(nameof(RespawnPlayer));
         }
@@ -34,7 +34,7 @@ public class UpsideDownChecker : MonoBehaviour
     }
 
     private IEnumerator RespawnPlayer()
-    {        
+    {
         yield return new WaitForSeconds(checkingTime);
 
         shouldntStop = true;
@@ -57,7 +57,7 @@ public class UpsideDownChecker : MonoBehaviour
 
             yield return new WaitForSeconds(0.1f);
         }
-                
+
         foreach (SpriteRenderer spriteRenderer in spritesToTint)
         {
             spriteRenderer.enabled = true;
